@@ -1,0 +1,57 @@
+Design and implement an adaptive App
+	1) Define app idea					19.11
+	2) Develop adaptation concept		17.12
+	3) Pitch							28.01
+	4) Demonstration					28.01 - 2.02 (?)
+
+1) Which problem?
+	User's time is a resource. Our application ensures 
+	that time management is done effictively be reducing 
+	time consuming routine activities.
+
+2) Who is the user?
+	Homeowners with relatively large apartments.
+
+3) Three key functions
+	Remote contol over electronic devices.
+	Remote reading of sensors (temperature, humidity, etc.).
+	User Positioning and Tracking in purpose of automatisation.
+
+> Must be relevant for Mobile and Ubiquitous Computing
+
+	IoT is relevant
+	
+> Should address at least one of the challenges mentioned in the first lecture
+	? Energy Challenge			Likely
+	
+		Mobile app must do as little work as possible. All heavy jobs are the server's responsibility
+		
+	? Offline Challenge			Maybe. Is it applicable to IoT?
+		We can store A LITTLE BIT of information on the mobile device (e.g. house layout), but
+			all useful information is located on the server.
+			
+	? Connectivity Challenge	Very likely
+	
+		What if the user is not at home, but still wants to control the Smart House?
+		My "simple" solution: use VPN. The security is "outsourced" to an existing software.
+		Industrial solution: use web-server with a public IP. Security must be ensured by the server itself.
+			
+	? Usability Challenge		Very likely. Applicable to any Android App
+	
+		Show current room on startup (based on Wi-Fi location)
+
+		The application behavior may depend on the user role.
+		e.g. For a kid the application hides functionality that is accessible for adults only 
+			(e.g. Climate Control. This is fascism from my POV, 
+			but as a demonstraion of concept...).
+
+> Should use context awareness and adaptation
+	? Turn on/off the lights automatically in a specific room...
+	  get room temperature automatically in a specific room...
+	  show specific room at the GUI startup...
+	  ...based on user's location
+		Location can be retrieved using Wi-Fi/Bluetooth information
+		E.g. each room has it's own Wi-Fi AP. Location is a function of Wi-Fi AP SSID.
+		Smarter (very difficult, overkill): Wi-Fi triangulation
+	
+
