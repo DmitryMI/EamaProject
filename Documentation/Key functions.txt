@@ -1,4 +1,4 @@
-Light control
-Reading Appliance state
-Authorization
-Separation of roles
+1. Light control
+2. Reading Appliance state
+3. Remote control of appliance
+4. Authorization. Separation of roles
