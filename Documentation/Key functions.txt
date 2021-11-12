@@ -2,3 +2,4 @@
 2. Reading Appliance state
 3. Remote control of appliance
 4. Authorization. Separation of roles
+5. Reading sensor data
