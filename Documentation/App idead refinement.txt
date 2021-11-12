@@ -1,0 +1,41 @@
+Presentation for 8 minutes!
+
+First presentation:
+1) + 	Application scenario
+2) + 	Target user group
+3) +- 	Key functions (show use-cases, e.g. a mockup)
+4) +-	Identify in detail the challenges of mobile computing you want to tackle
+5) +-	Architecture and key technologies
+
+What do you know about your users?
+1. Brainstorm potential user groups
+2. Rank list of user groups and continue with first place
+3. Fill empathy map and derive at least two personas
+
+	Use interviews and Thinking Aloud
+	
+	General questions:
+		Age
+		Gender
+		Location
+		Hobbies
+		Income
+		Education level
+		Profession
+		Marital status
+		Who they trust
+		What they read/watch
+		Phone size
+	
+	App-specific questions:
+		Privacy of the SmartHouse network
+		Push notifications / Manual polling / Another technologies
+		Ads / Subscription / Paid app
+		Mobile internet or LAN stability
+		Do you need separation of roles?
+		What automation scenarios do you need in your house?
+		Do you have a house or an apartment? Do you rent or own?
+		
+		
+	
+
