@@ -1,0 +1,45 @@
+Privacy of the SmartHouse network
+	Depends on information.
+	I need to control roles.
+	
+How many people leave in you house? Do you want to restrict kids?
+	Do you need separation of roles?	
+	Important. I need "root" profile.
+	I need to control other profiles.
+	I want to control who does what?
+	Parental control - not very important.
+	What people can do?
+	
+		
+Do you like to be informed about events? How?
+	Push notifications / Manual polling / Another technologies
+	
+	Push notifications - ok. Not invasive!
+
+	
+What business model do you like?
+	Ads / Subscription / Paid app
+	
+	Free with ads - better.
+	Personal data - important. Will pay, if ads are not private.
+	
+Mobile internet or LAN stability?
+	Very stable in home country.
+	In Germany stable.
+	Router most of the time is on. Not during nights.
+	
+What automation scenarios do you need in your house?
+	Interesting to try. 
+	Not sure about scenarios.
+	Info about STATE of an equipment - imortant.
+	If house if open or not.
+	Dangerous.
+	DANGEROUS FOR INTERNET!
+	Turn lights on/off - not very important, but good if cheap.
+	
+
+Do you have a house or an apartment? Do you rent or own? How do you move? How often do you change the flat? Do you want to take your old equipment with you?
+	
+	Now renting. Prefers owning.
+	Every six years moves.
+	Keeps equipment.

@@ -1,0 +1,22 @@
+Age: 							22 - 23	
+Sex: 							Male
+Activity: 						Master-student
+Family:							Single
+Place of birth:					Moscow
+Place of living:				Dresden (private apartment)
+Income:							0
+Hobbys:							IT, Electronics
+Internet activity:				Daily
+Working experience:				Software Development
+Education:						Bachelor of Computer Science
+Langauges:						Russian (native), English (C1), German (A2)
+Cultural interest:				Western culture, economics and politics
+Daily tasks:					Studying, room cleaning, cooking, washing
+Local knowledge:				Bad
+Mean of Transport:				Public
+Driving license:				Yes
+Goals:							Immigration
+Needs:							Political and Economical Freedom.
+Expectations of the product:	Easy to use daily tasks automation tools
+Antipathy:						Socialism
+General description:			Confident, Educated, Rational
