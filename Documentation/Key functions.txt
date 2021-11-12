@@ -1,0 +1,4 @@
+Light control
+Reading Appliance state
+Authorization
+Separation of roles
