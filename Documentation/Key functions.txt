@@ -1,5 +1,6 @@
 1. Light control
 2. Reading Appliance state
 3. Remote control of appliance
-4. Authorization. Separation of roles
-5. Reading sensor data
+4. Automatization scenarios
+5. Authorization. Separation of roles
+6. Reading sensor data
