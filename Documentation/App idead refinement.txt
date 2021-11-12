@@ -29,13 +29,21 @@ What do you know about your users?
 	
 	App-specific questions:
 		Privacy of the SmartHouse network
-		Push notifications / Manual polling / Another technologies
-		Ads / Subscription / Paid app
-		Mobile internet or LAN stability
-		Do you need separation of roles?
+		
+		Do you like to be informed about events? How?
+			Push notifications / Manual polling / Another technologies
+			
+		What business model do you like?
+			Ads / Subscription / Paid app
+			
+		Mobile internet or LAN stability?
+		
+		How many people leave in you house? Do you want to restrict kids?
+			Do you need separation of roles?
+			
 		What automation scenarios do you need in your house?
-		Do you have a house or an apartment? Do you rent or own?
+		
+		Do you have a house or an apartment? Do you rent or own? How do you move? How often do you change the flat? Do you want to take your old equipment with you?
 		
 		
-	
 
