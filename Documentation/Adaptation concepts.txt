@@ -1,0 +1,19 @@
+1) 2 Problematic Situations
+	a) Battery low
+		We can disable server polling to save energy. User can still update 
+		SmartHouse states manually and push updates manually
+		
+	b) User leaves their apartment
+		We can switch to WAN connection mode.
+		We can switch to offline mode.
+
+2) Specific context features
+	a) WI-FI state
+	b) Battery state
+
+3) 2 Specific adaptation mechanisms
+	a) Choose current room based on Wi-Fi position tracking
+	b) Choose client-server interaction scheme based on battery state
+
+4) Mapping context features to parameters (MAPE-K)
+	TODO Draw MAPE-K
