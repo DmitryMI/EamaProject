@@ -17,3 +17,6 @@
 
 4) Mapping context features to parameters (MAPE-K)
 	TODO Draw MAPE-K
+	
+	
+SEMINAR UPDATES
