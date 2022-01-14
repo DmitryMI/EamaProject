@@ -7,6 +7,6 @@ namespace SmartHouseServer.SmartHouse
 {
     public interface ILightSource : IAppliance
     {
-
+        float Brightness { get; set; }        
     }
 }

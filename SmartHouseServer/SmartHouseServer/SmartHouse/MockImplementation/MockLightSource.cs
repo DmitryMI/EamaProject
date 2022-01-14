@@ -9,7 +9,18 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
     {
         private const float ChangeChancePerSecond = 0.1f;
 
-        private bool isOn;   
+        private bool isOn;
+        private float brightness;
+
+        public float Brightness
+        {
+            get => brightness;
+            set
+            {
+                brightness = value;
+                OnBrightnessChanged();
+            }
+        }
 
         public override bool IsOn { 
             get => isOn; 
@@ -43,12 +54,16 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             OnValueChanged(nameof(IsOn));
         }
 
+        public void OnBrightnessChanged()
+        {
+            OnValueChanged(nameof(Brightness));
+        }
+
         public override void SimulationUpdate(float deltaTime)
         {
-            if(RandomUtils.GetBoolWithChange(ChangeChancePerSecond * deltaTime))
-            {
-                // Randomly toggle light
-
+            // Randomly toggle light
+            if (RandomUtils.GetBoolWithChange(ChangeChancePerSecond * deltaTime))
+            {                
                 IsOn = !IsOn;
             }
         }
