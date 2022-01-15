@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHouseServer.SmartHouse;
+using SmartHouseServer.SmartHouse.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,25 @@ namespace SmartHouseServer.Controllers
             apartment = repository.GetApartment();
         }
 
+        private IAppliance GetAppliance(int roomId, int applianceId)
+        {
+            Room room = null;
+            if (apartment.Count > roomId && roomId >= 0)
+            {
+                room = apartment[roomId];
+            }
+            if (room == null)
+            {
+                return null;
+            }
+
+            if (room.Count > applianceId && applianceId >= -0)
+            {
+                return room[applianceId];
+            }
+            return null;
+        }
+
         // GET: api/<RoomController>
         [HttpGet]
         public Apartment Get()
@@ -32,43 +52,53 @@ namespace SmartHouseServer.Controllers
         }
 
         // GET api/<RoomController>/5
-        [HttpGet("{roomId}/{id}")]
-        public IAppliance Get(int roomId, int id)
+        [HttpGet("{roomId}/{applianceId}")]
+        public IAppliance Get(int roomId, int applianceId)
         {
-            Room room = null;
-            if (apartment.Count > roomId && roomId >= 0)
-            {
-                room = apartment[roomId];
-            }
-            if(room == null)
+            return GetAppliance(roomId, applianceId);
+        }
+
+        [HttpGet("{roomId}/{applianceId}/{variable}")]
+        public string Get(int roomId, int applianceId, string variable)
+        {
+            IAppliance app = GetAppliance(roomId, applianceId);
+            if(app == null)
             {
                 return null;
             }
 
-            if(room.Count > id && id >= -0)
+            IRestInvokable restInvokable = RestVariableHelper.GetRestVariable(app, variable);
+            if(restInvokable == null)
             {
-                return room[id];
+                return null;
             }
-
-            return null;
+            return restInvokable.Get().ToString();
         }
 
-        // POST api/<RoomController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
 
         // PUT api/<RoomController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("{roomId}/{applianceId}/{variable}")]
+        public void Put(int roomId, int applianceId, string variable, [FromBody] string value)
         {
+            IAppliance app = GetAppliance(roomId, applianceId);
+            if (app == null)
+            {
+                return;
+            }
+
+            IRestInvokable restInvokable = RestVariableHelper.GetRestVariable(app, variable);
+            if (restInvokable == null)
+            {
+                return;
+            }
+
+            if(restInvokable.VariableAttribute.AccessMode == RestAccess.ReadOnly)
+            {
+                return;
+            }
+
+            restInvokable.Set(value);
         }
 
-        // DELETE api/<RoomController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

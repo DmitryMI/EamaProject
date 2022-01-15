@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartHouseServer.SmartHouse.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
         private bool isOn;
         private float brightness;
 
+        [RestVariable(RestAccess.ReadWrite, "brightness")]
         public float Brightness
         {
             get => brightness;
@@ -22,6 +24,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             }
         }
 
+        [RestVariable(RestAccess.ReadWrite, "isOn")]
         public override bool IsOn { 
             get => isOn; 
             set 

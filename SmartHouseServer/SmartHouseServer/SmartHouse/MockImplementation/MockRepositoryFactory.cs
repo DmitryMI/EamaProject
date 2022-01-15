@@ -15,6 +15,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             if(instance == null)
             {
                 instance = new Simulator();
+                instance.StartSimulation();
             }
             return instance;
         }

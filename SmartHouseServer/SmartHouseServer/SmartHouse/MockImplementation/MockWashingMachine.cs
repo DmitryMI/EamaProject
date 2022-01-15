@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartHouseServer.SmartHouse.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
         {
         }
 
+        [RestVariable(RestAccess.ReadWrite, "isOn")]
         public override bool IsOn { 
             get => isWorking; 
             set
@@ -34,9 +36,12 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             }
         }
 
+        [RestVariable(RestAccess.ReadOnly, "washingTemperature")]
         public float WashingTemperature => washingTemperature;
+        [RestVariable(RestAccess.ReadOnly, "washingDuration")]
         public float WashingDuration => workTimeLeft;
 
+        [RestVariable(RestAccess.WriteOnly, "nextWashingProgram")]
         public string NextWashingProgram
         {
             get => "N/A";
@@ -72,12 +77,12 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
 
         public event Action<IMachine, string> OnNotificationEvent;
 
-        public void OnTurnedOn()
+        private void OnTurnedOn()
         {
             OnValueChanged(nameof(IsOn));
         }
 
-        public void OnTurnedOff()
+        private void OnTurnedOff()
         {
             OnValueChanged(nameof(IsOn));
         }

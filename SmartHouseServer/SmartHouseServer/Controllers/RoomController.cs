@@ -23,14 +23,7 @@ namespace SmartHouseServer.Controllers
             _logger = logger;
             repository = repositoryFactory.CreateRepository();
             apartment = repository.GetApartment();
-        }
-
-        // GET: api/<RoomController>
-        [HttpGet]
-        public Apartment Get()
-        {
-            return apartment;
-        }
+        }        
 
         // GET api/<RoomController>/5
         [HttpGet("{id}")]
@@ -42,24 +35,6 @@ namespace SmartHouseServer.Controllers
             }
 
             return null;
-        }
-
-        // POST api/<RoomController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<RoomController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<RoomController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        }        
     }
 }

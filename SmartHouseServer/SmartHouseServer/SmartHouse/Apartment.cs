@@ -1,17 +1,24 @@
-﻿using System;
+﻿using SmartHouseServer.SmartHouse.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SmartHouseServer.SmartHouse
 {
-    public class Apartment
+    public class Apartment : IRestSerializable
     {
+        [RestVariable(RestAccess.ReadOnly)]
         public String Name { get; }
+        [RestVariable(RestAccess.ReadOnly)]
         public float Width { get; }
+        [RestVariable(RestAccess.ReadOnly)]
         public float Height { get; }
+        [RestVariable(RestAccess.ReadOnly)]
         public float Longtitude { get; }
+        [RestVariable(RestAccess.ReadOnly)]
         public float Latitude { get; }
+        [RestVariable(RestAccess.ReadOnly)]
         public Room[] Rooms { get; }
 
         public int Count => Rooms.Length;

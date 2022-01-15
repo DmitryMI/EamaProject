@@ -26,15 +26,23 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
         {
             isSimulationRunning = false;
             simulationThread.Wait();
+            simulationThread = null;
+        }
+
+        public void StartSimulation()
+        {
+            if(simulationThread != null)
+            {
+                StopSimulation();
+            }
+            simulationThread = new Task(SimulationLoop, TaskCreationOptions.LongRunning);
+            isSimulationRunning = true;
+            simulationThread.Start();
         }
 
         public Simulator()
         {
-            CreateMockLayout();
-
-            simulationThread = new Task(SimulationLoop, TaskCreationOptions.LongRunning);
-            isSimulationRunning = true;
-            simulationThread.Start();
+            CreateMockLayout();            
         }
 
         private void CreateMockLayout()

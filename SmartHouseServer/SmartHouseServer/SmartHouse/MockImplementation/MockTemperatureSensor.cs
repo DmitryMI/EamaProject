@@ -1,4 +1,5 @@
-﻿using SmartHouseServer.SmartHouse.Sensors;
+﻿using SmartHouseServer.SmartHouse.Helpers;
+using SmartHouseServer.SmartHouse.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
         private float beforeNextMeasurement;
         private bool isOn;
 
+        [RestVariable(RestAccess.ReadWrite, "isOn")]
         public override bool IsOn
         {
             get => isOn;
@@ -28,6 +30,8 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
                 }
             }
         }
+
+        [RestVariable(RestAccess.ReadWrite, "measurementInterval")]
         public float MeasurementInterval { get; set; }
 
         public float Value => value;
