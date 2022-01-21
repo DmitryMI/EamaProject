@@ -1,0 +1,11 @@
+Something that attracts attention: --
+
+Which problem: Slide 2
+
+Irresistible about out solution: modular structure, exchangeable components (Frontend: android or Web), expandable device network.
+
+What does customer gain: easy IoT solution, power-efficient device communication, convenient control infrastructure.
+
+Competition: cheaper, commodity hardware against specialized, exploitation of standardized protocols.
+
+Team: Slide 11
