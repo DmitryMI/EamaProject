@@ -1,9 +1,13 @@
 package com.example.smarthouse.backend.restAPI;
 
 import android.content.Context;
+import android.telecom.Call;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
+import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -14,11 +18,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.smarthouse.backend.deviceTree.Apartment;
+import com.google.common.util.concurrent.ListenableFuture;
 
-public class SynchronisationWorker extends Worker {
+import java.io.IOException;
+
+import javax.security.auth.callback.Callback;
+
+public class SynchronisationWorker extends ListenableWorker {
     private Apartment apartment;
-    private String serverIP = "localhost";
-    private int serverPort = 8080;
+    private String serverIP = "192.168.178.20";
+    private int serverPort = 5000;
 
     public SynchronisationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -26,7 +35,8 @@ public class SynchronisationWorker extends Worker {
 
     @NonNull
     @Override
-    public Result doWork() {
+    public ListenableFuture<Result> startWork() {
+
         if (apartment == null) {
             getTree();
         } else {
@@ -34,6 +44,7 @@ public class SynchronisationWorker extends Worker {
         }
         return null;
     }
+
 
     private void getTree() {
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
@@ -49,7 +60,7 @@ public class SynchronisationWorker extends Worker {
 
             }
         }
-        String url = serverIP + ":" + serverPort + "/Apartment";
+        String url = serverIP + ":" + serverPort + "/api/Apartment";
         ResponseListener listener = new ResponseListener();
         StringRequest stringRequest = new StringRequest(url, listener, listener);
 
