@@ -1,28 +1,19 @@
 package com.example.smarthouse.backend.restAPI;
 
 import android.content.Context;
-import android.telecom.Call;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.work.ListenableWorker;
-import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.smarthouse.backend.deviceTree.Apartment;
+import com.example.smarthouse.backend.deviceTree.types.Apartment;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import java.io.IOException;
-
-import javax.security.auth.callback.Callback;
 
 public class SynchronisationWorker extends ListenableWorker {
     private Apartment apartment;

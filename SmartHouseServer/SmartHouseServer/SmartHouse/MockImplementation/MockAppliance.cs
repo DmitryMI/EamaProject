@@ -20,6 +20,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
 
         [RestVariable(RestAccess.ReadWrite, "isOn")]
         public abstract bool IsOn { get; set; }
+        public abstract string ApplianceType { get; }
 
         public event Action<IAppliance, string> OnValueChangedEvent;
 
@@ -31,7 +32,6 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             }
         }
 
-        public abstract string GetApplianceType();
 
         public abstract void SimulationUpdate(float deltaTime);
 

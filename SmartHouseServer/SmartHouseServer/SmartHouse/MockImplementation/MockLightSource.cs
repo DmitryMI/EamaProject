@@ -37,6 +37,9 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             } 
         }
 
+        [RestVariable(RestAccess.ReadOnly, "applianceType")]
+        public override string ApplianceType => "LightSource";
+
         public MockLightSource(int id, float x, float y, string name) : base(id, x, y, name)
         {
             RelativeX = x;

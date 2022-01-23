@@ -1,7 +1,15 @@
 package com.example.smarthouse;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.widget.Toast;
 
+import com.example.smarthouse.backend.discovery.Discovery;
+import com.example.smarthouse.backend.discovery.DiscoveryService;
 import com.example.smarthouse.backend.restAPI.SynchronisationWorker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -18,7 +26,44 @@ import androidx.work.WorkRequest;
 
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
+
+    private DiscoveryService discoveryService;
+    private boolean isBoundToDiscoveryService;
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            if(service instanceof DiscoveryService.LocalBinder) {
+                DiscoveryService.LocalBinder binder = (DiscoveryService.LocalBinder) service;
+                discoveryService = binder.getService();
+                isBoundToDiscoveryService = true;
+
+                discoveryService.StartDiscovery(new DiscoveryService.DiscoveryReceivedCallback() {
+                    @Override
+                    public void OnDiscoveryReceived(Discovery discovery) {
+                        OnDiscoveryReceivedCallback(discovery);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            if(arg0.getClassName().equals(discoveryService.getClass().getName())) {
+                isBoundToDiscoveryService = false;
+            }
+        }
+    };
+
+    private void OnDiscoveryReceivedCallback(Discovery discovery)
+    {
+        Toast toast = Toast.makeText(getApplicationContext(), String.format("Discovery: %b, %s", discovery.isLan(), discovery.getUrl()), Toast.LENGTH_SHORT);
+        toast.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +79,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
+
         PeriodicWorkRequest periodic = new PeriodicWorkRequest
-                .Builder(SynchronisationWorker.class, 15, TimeUnit.MINUTES).build();
+                .Builder(SynchronisationWorker.class, 16, TimeUnit.MINUTES).build();
         WorkManager
                 .getInstance(getApplicationContext())
-                .enqueueUniquePeriodicWork("smartHouseSync", ExistingPeriodicWorkPolicy.REPLACE, periodic);
+                .enqueueUniquePeriodicWork("smartHouseSync", ExistingPeriodicWorkPolicy.KEEP, periodic);
+
+        Intent intent = new Intent(this, DiscoveryService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
 

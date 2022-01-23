@@ -36,6 +36,9 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             }
         }
 
+        [RestVariable(RestAccess.ReadOnly, "applianceType")]
+        public override string ApplianceType => "WashingMachine";
+
         [RestVariable(RestAccess.ReadOnly, "washingTemperature")]
         public float WashingTemperature => washingTemperature;
         [RestVariable(RestAccess.ReadOnly, "washingDuration")]
@@ -86,11 +89,7 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
         {
             OnValueChanged(nameof(IsOn));
         }
-
-        public override string GetApplianceType()
-        {
-            return "WashingMachine";
-        }
+        
 
         public override void SimulationUpdate(float deltaTime)
         {

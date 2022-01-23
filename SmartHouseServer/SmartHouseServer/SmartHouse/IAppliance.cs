@@ -13,8 +13,9 @@ namespace SmartHouseServer.SmartHouse
         float RelativeY { get; }
         string Name { get; }
         bool IsOn { get; set; }
+        string ApplianceType { get; }
 
-        string GetApplianceType();
+
         event Action<IAppliance, string> OnValueChangedEvent;
 
         void RestDeserialize(string variable, string value);

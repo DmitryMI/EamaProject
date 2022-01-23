@@ -36,10 +36,8 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
 
         public float Value => value;
 
-        public override string GetApplianceType()
-        {
-            return "TemperatureSensor";
-        }
+        [RestVariable(RestAccess.ReadOnly, "applianceType")]
+        public override string ApplianceType => "TemperatureSensor";
 
         public string GetSensorType()
         {
