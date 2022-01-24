@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -60,22 +62,23 @@ public class DiscoveryService extends Service implements DiscoveryBroadcastRecei
 
         WorkManager workManager = WorkManager.getInstance(getApplicationContext());
 
-        OneTimeWorkRequest discoveryNowRequest = OneTimeWorkRequest.from(DiscoveryWorker.class);
-        workManager.enqueue(discoveryNowRequest);
+        //OneTimeWorkRequest discoveryNowRequest = OneTimeWorkRequest.from(DiscoveryWorker.class);
+        //workManager.enqueue(discoveryNowRequest);
 
         PeriodicWorkRequest discoveryPeriodicRequest = new PeriodicWorkRequest.Builder(DiscoveryWorker.class, 15, TimeUnit.MINUTES).build();
-        workManager.enqueueUniquePeriodicWork(DiscoveryWorker.class.getName(), ExistingPeriodicWorkPolicy.KEEP, discoveryPeriodicRequest);
+        workManager.enqueueUniquePeriodicWork(DiscoveryWorker.PeriodicWorkName, ExistingPeriodicWorkPolicy.REPLACE, discoveryPeriodicRequest);
         areWorkersInitialized = true;
     }
 
-    public void StartDiscovery(@Nullable DiscoveryReceivedCallback callback)
+    public void startDiscovery(@Nullable DiscoveryReceivedCallback callback)
     {
+        Log.i("SmartHouse DiscoveryService", "startDiscovery()");
         if(callback != null) {
             oneTimeCallbacks.add(callback);
         }
         WorkManager workManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest discoveryNowRequest = OneTimeWorkRequest.from(DiscoveryWorker.class);
-        workManager.enqueue(discoveryNowRequest);
+        workManager.enqueueUniqueWork(DiscoveryWorker.OneTimeWorkName, ExistingWorkPolicy.KEEP, discoveryNowRequest);
     }
 
     public void AddPermanentCallback(DiscoveryReceivedCallback callback)

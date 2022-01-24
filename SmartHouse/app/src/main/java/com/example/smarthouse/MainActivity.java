@@ -19,10 +19,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +40,7 @@ public class MainActivity extends AppCompatActivity{
                 discoveryService = binder.getService();
                 isBoundToDiscoveryService = true;
 
-                discoveryService.StartDiscovery(new DiscoveryService.DiscoveryReceivedCallback() {
+                discoveryService.startDiscovery(new DiscoveryService.DiscoveryReceivedCallback() {
                     @Override
                     public void OnDiscoveryReceived(Discovery discovery) {
                         OnDiscoveryReceivedCallback(discovery);
@@ -61,7 +59,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void OnDiscoveryReceivedCallback(Discovery discovery)
     {
-        Toast toast = Toast.makeText(getApplicationContext(), String.format("Discovery: %b, %s", discovery.isLan(), discovery.getUrl()), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getApplicationContext(), String.format("Discovery: %b, %s", discovery.isLan(), discovery.getLanUrl()), Toast.LENGTH_SHORT);
         toast.show();
     }
 

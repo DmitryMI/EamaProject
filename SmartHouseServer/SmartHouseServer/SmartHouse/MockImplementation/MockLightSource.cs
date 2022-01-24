@@ -47,11 +47,6 @@ namespace SmartHouseServer.SmartHouse.MockImplementation
             Name = name;
         }
 
-        public override string GetApplianceType()
-        {
-            return "LightSource";
-        }
-
         public void OnIsOnChanged()
         {
             // The real LightSource will send command over CAN network

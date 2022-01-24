@@ -2,6 +2,7 @@ package com.example.smarthouse.backend.discovery;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,9 @@ import java.util.concurrent.TimeoutException;
 
 
 public class DiscoveryWorker extends ListenableWorker {
+    public static final String PeriodicWorkName = "DISCOVERY_PERIODIC";
+    public static final String OneTimeWorkName = "DISCOVERY_ONE_TIME";
+
     /**
      * @param appContext   The application {@link Context}
      * @param workerParams Parameters to setup the internal state of this worker
@@ -37,7 +41,7 @@ public class DiscoveryWorker extends ListenableWorker {
         public DiscoveryFuture(Context context)
         {
             this.context = context;
-            client = new DiscoveryClient(new DiscoveryClient.DiscoveryCallback() {
+            client = new DiscoveryClient(context, new DiscoveryClient.DiscoveryCallback() {
                 @Override
                 public void OnServerDiscovered(Discovery discovery) {
                     SendDiscoveryInfo(discovery);
@@ -110,6 +114,7 @@ public class DiscoveryWorker extends ListenableWorker {
     @NonNull
     @Override
     public ListenableFuture<Result> startWork() {
+        Log.i("SmartHouse DiscoveryWorker", "startWork()");
         return new DiscoveryFuture(getApplicationContext());
     }
 }
