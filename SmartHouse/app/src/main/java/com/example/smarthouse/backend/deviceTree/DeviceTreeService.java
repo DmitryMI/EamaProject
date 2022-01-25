@@ -35,7 +35,6 @@ public class DeviceTreeService extends Service {
     }
 
     LocalBinder binder = new LocalBinder();      // interface for clients that bind
-    private DeviceTreeClient client;
     private DiscoveryService discoveryService;
     private Apartment apartment;
 
@@ -90,8 +89,6 @@ public class DeviceTreeService extends Service {
 
     @Override
     public void onCreate() {
-        client = new MockDeviceTreeClient();
-
         Intent intent = new Intent(this, DiscoveryService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
