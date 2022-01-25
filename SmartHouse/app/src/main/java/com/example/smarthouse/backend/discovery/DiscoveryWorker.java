@@ -23,7 +23,7 @@ public class DiscoveryWorker extends ListenableWorker {
     public static final String PeriodicWorkName = "DISCOVERY_PERIODIC";
     public static final String OneTimeWorkName = "DISCOVERY_ONE_TIME";
 
-    private DiscoveryClient client;
+    private final DiscoveryClient client;
 
     /**
      * @param appContext   The application {@link Context}
