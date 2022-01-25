@@ -25,6 +25,9 @@ import java.util.concurrent.TimeoutException;
 
 public class SynchronisationWorker extends ListenableWorker {
 
+    public static final String PeriodicWorkName = "SYNCHRONIZATION_PERIODIC";
+    public static final String OneTimeWorkName = "SYNCHRONIZATION_ONE_TIME";
+
     private final DeviceTreeClient client;
     private Apartment apartment;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -51,9 +54,7 @@ public class SynchronisationWorker extends ListenableWorker {
     public SynchronisationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
-        Data data = getInputData();
-
-        client = (DeviceTreeClient)data.getKeyValueMap().get("DeviceTreeClient");
+        client = DeviceTreeService.getDeviceTreeClient();
     }
 
     private class SyncFuture implements ListenableFuture<Result>, DeviceTreeClient.ObjectReceivedCallback<Apartment>

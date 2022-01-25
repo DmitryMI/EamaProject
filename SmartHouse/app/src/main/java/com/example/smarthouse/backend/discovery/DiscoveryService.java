@@ -19,6 +19,16 @@ import java.util.concurrent.TimeUnit;
 
 public class DiscoveryService extends Service implements DiscoveryBroadcastReceiver.DiscoveryReceiver {
 
+    private static DiscoveryClient clientInstance;
+    public static DiscoveryClient getDiscoveryClient()
+    {
+        if(clientInstance == null)
+        {
+            clientInstance = new MockDiscoveryClient();
+        }
+        return clientInstance;
+    }
+
     private final LocalBinder localBinder = new LocalBinder();
     private Discovery discovery;
     private boolean areWorkersInitialized = false;
@@ -56,7 +66,7 @@ public class DiscoveryService extends Service implements DiscoveryBroadcastRecei
         return discovery;
     }
 
-    private void InitializeDiscoveryWorkers()
+    private void initializeDiscoveryWorkers()
     {
         // The service is starting, due to a call to startService()
 
@@ -64,8 +74,8 @@ public class DiscoveryService extends Service implements DiscoveryBroadcastRecei
 
         //OneTimeWorkRequest discoveryNowRequest = OneTimeWorkRequest.from(DiscoveryWorker.class);
         //workManager.enqueue(discoveryNowRequest);
-
         PeriodicWorkRequest discoveryPeriodicRequest = new PeriodicWorkRequest.Builder(DiscoveryWorker.class, 15, TimeUnit.MINUTES).build();
+
         workManager.enqueueUniquePeriodicWork(DiscoveryWorker.PeriodicWorkName, ExistingPeriodicWorkPolicy.REPLACE, discoveryPeriodicRequest);
         areWorkersInitialized = true;
     }
@@ -108,7 +118,7 @@ public class DiscoveryService extends Service implements DiscoveryBroadcastRecei
     @Override
     public IBinder onBind(Intent intent) {
         if(!areWorkersInitialized) {
-            InitializeDiscoveryWorkers();
+            initializeDiscoveryWorkers();
         }
         if(!isBroadcastReceiverRegistered)
         {
