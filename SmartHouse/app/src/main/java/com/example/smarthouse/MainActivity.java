@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.example.smarthouse.backend.discovery.Discovery;
 import com.example.smarthouse.backend.discovery.DiscoveryService;
-import com.example.smarthouse.backend.restAPI.SynchronisationWorker;
+import com.example.smarthouse.backend.deviceTree.SynchronisationWorker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
