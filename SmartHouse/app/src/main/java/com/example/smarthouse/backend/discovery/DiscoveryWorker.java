@@ -6,7 +6,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.concurrent.futures.CallbackToFutureAdapter;
+import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 
@@ -23,32 +23,28 @@ public class DiscoveryWorker extends ListenableWorker {
     public static final String PeriodicWorkName = "DISCOVERY_PERIODIC";
     public static final String OneTimeWorkName = "DISCOVERY_ONE_TIME";
 
+    private final DiscoveryClient client;
+
     /**
      * @param appContext   The application {@link Context}
      * @param workerParams Parameters to setup the internal state of this worker
      */
     public DiscoveryWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
+
+        client = DiscoveryService.getDiscoveryClient();
     }
 
-    private static class DiscoveryFuture implements ListenableFuture<Result>
+    private class DiscoveryFuture implements ListenableFuture<Result>
     {
         boolean isCanceled;
         Context context;
-        DiscoveryClient client;
         ArrayList<Pair<Runnable, Executor>> listeners = new ArrayList<>();
 
         public DiscoveryFuture(Context context)
         {
             this.context = context;
-            client = new DiscoveryClient(context, new DiscoveryClient.DiscoveryCallback() {
-                @Override
-                public void OnServerDiscovered(Discovery discovery) {
-                    SendDiscoveryInfo(discovery);
-                }
-            });
-
-            client.discoverServer();
+            client.discoverServer(this::SendDiscoveryInfo);
         }
 
         private void SendDiscoveryInfo(Discovery discovery)

@@ -1,9 +1,9 @@
 package com.example.smarthouse;
 
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -13,9 +13,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
+import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
+import com.example.smarthouse.backend.deviceTree.types.Apartment;
 import com.example.smarthouse.backend.discovery.Discovery;
 import com.example.smarthouse.backend.discovery.DiscoveryService;
-import com.example.smarthouse.backend.restAPI.SynchronisationWorker;
+import com.example.smarthouse.backend.deviceTree.SynchronisationWorker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,10 +32,10 @@ import androidx.work.WorkManager;
 
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver {
 
-    private DiscoveryService discoveryService;
-    private boolean isBoundToDiscoveryService;
+    private DeviceTreeService deviceTreeService;
+    private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -40,32 +43,20 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            if (service instanceof DiscoveryService.LocalBinder) {
-                DiscoveryService.LocalBinder binder = (DiscoveryService.LocalBinder) service;
-                discoveryService = binder.getService();
-                isBoundToDiscoveryService = true;
+            if(service instanceof DeviceTreeService.LocalBinder) {
+                DeviceTreeService.LocalBinder binder = (DeviceTreeService.LocalBinder) service;
+                deviceTreeService = binder.getService();
 
-                discoveryService.startDiscovery(new DiscoveryService.DiscoveryReceivedCallback() {
-                    @Override
-                    public void OnDiscoveryReceived(Discovery discovery) {
-                        OnDiscoveryReceivedCallback(discovery);
-                    }
-                });
+                deviceTreeService.requestDeviceTreeUpdate();
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            if (arg0.getClassName().equals(discoveryService.getClass().getName())) {
-                isBoundToDiscoveryService = false;
-            }
+            deviceTreeService = null;
         }
     };
 
-    private void OnDiscoveryReceivedCallback(Discovery discovery) {
-        Toast toast = Toast.makeText(getApplicationContext(), String.format("Discovery: %b, %s", discovery.isLan(), discovery.getLanUrl()), Toast.LENGTH_SHORT);
-        toast.show();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +72,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
+        deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
+        IntentFilter filter = new IntentFilter(DeviceTreeService.SyncFinishedAction);
+        registerReceiver(deviceTreeBroadcastReceiver, filter);
 
-        PeriodicWorkRequest periodic = new PeriodicWorkRequest
-                .Builder(SynchronisationWorker.class, 16, TimeUnit.MINUTES).build();
-        WorkManager
-                .getInstance(getApplicationContext())
-                .enqueueUniquePeriodicWork("smartHouseSync", ExistingPeriodicWorkPolicy.KEEP, periodic);
-
-        Intent intent = new Intent(this, DiscoveryService.class);
+        Intent intent = new Intent(this, DeviceTreeService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
     }
@@ -112,10 +100,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDeviceTreeReceived() {
+        Apartment apartment = deviceTreeService.getDeviceTree();
+        Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
+        toast.show();
+    }
+}
     public void onClickSettings(MenuItem item) {
         setContentView(R.layout.fragment_settings);
     }
-
-
-}
-

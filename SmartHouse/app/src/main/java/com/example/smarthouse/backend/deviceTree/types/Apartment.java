@@ -14,4 +14,37 @@ public class Apartment implements JsonReadable{
     public void FromJson(JSONObject jsonObject) {
 
     }
+
+    public Apartment(String name, float width, float height, Room[] rooms)
+    {
+        this.name = name;
+        this.width = width;
+        this.height = height;
+        this.rooms = rooms;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public Room[] getRooms() {
+        return rooms;
+    }
+
 }
