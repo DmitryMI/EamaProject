@@ -20,4 +20,5 @@ public abstract class DeviceTreeClient {
     public abstract void getAppliance(ObjectReceivedCallback<Appliance> callback, int roomId, int applianceId);
     public abstract void getRoom(ObjectReceivedCallback<Room> callback, int roomId);
     public abstract void getApartment(ObjectReceivedCallback<Apartment> callback);
+
 }

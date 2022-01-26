@@ -136,4 +136,5 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         // TODO Failure simulation
         callback.onObjectReceived(apartment);
     }
+
 }

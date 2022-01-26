@@ -5,24 +5,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
+import com.example.smarthouse.backend.deviceTree.DeviceTreeClient;
 import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
+import com.example.smarthouse.backend.deviceTree.MockDeviceTreeClient;
 import com.example.smarthouse.backend.deviceTree.types.Apartment;
+import com.example.smarthouse.backend.deviceTree.types.TemperatureSensor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver {
 
     private DeviceTreeService deviceTreeService;
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
+    MockDeviceTreeClient mockDeviceTreeClient;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -47,8 +56,10 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -62,13 +73,20 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
                         startActivity(new Intent(getApplicationContext(), DevicesActivity.class));
                         overridePendingTransition(0, 0);
                         return true;
-
+                    case R.id.navigation_notifications:
+                        startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
                     case R.id.navigation_home:
                         return true;
                 }
                 return false;
             }
         });
+
+        TextView currentTemperature = findViewById(R.id.currentTemperature);
+        //Float temperature = 22.0f;
+        //currentTemperature.setText("Current Temperature " + temperature + "}");
 
 
         deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
