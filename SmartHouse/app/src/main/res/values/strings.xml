@@ -3,4 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_devices">Devices</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_settings">Settings</string>
+    <string name="dishwasher">Dishwasher</string>
+    <item name="text_devices" type="id" />
+    <item name="text_notifications" type="id" />
 </resources>

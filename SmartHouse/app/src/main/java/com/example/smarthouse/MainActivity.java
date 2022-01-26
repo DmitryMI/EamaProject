@@ -1,11 +1,16 @@
 package com.example.smarthouse;
 
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.smarthouse.backend.discovery.Discovery;
@@ -24,7 +29,7 @@ import androidx.work.WorkManager;
 
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private DiscoveryService discoveryService;
     private boolean isBoundToDiscoveryService;
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity{
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            if(service instanceof DiscoveryService.LocalBinder) {
+            if (service instanceof DiscoveryService.LocalBinder) {
                 DiscoveryService.LocalBinder binder = (DiscoveryService.LocalBinder) service;
                 discoveryService = binder.getService();
                 isBoundToDiscoveryService = true;
@@ -51,14 +56,13 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            if(arg0.getClassName().equals(discoveryService.getClass().getName())) {
+            if (arg0.getClassName().equals(discoveryService.getClass().getName())) {
                 isBoundToDiscoveryService = false;
             }
         }
     };
 
-    private void OnDiscoveryReceivedCallback(Discovery discovery)
-    {
+    private void OnDiscoveryReceivedCallback(Discovery discovery) {
         Toast toast = Toast.makeText(getApplicationContext(), String.format("Discovery: %b, %s", discovery.isLan(), discovery.getLanUrl()), Toast.LENGTH_SHORT);
         toast.show();
     }
@@ -89,5 +93,29 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.top_nav_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_settings:
+                onClickSettings(item);
+                break;
+            case R.id.app_bar_search:
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onClickSettings(MenuItem item) {
+        setContentView(R.layout.fragment_settings);
+    }
+
 
 }
+
