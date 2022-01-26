@@ -9,28 +9,18 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
-
-import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
-import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
-import com.example.smarthouse.backend.deviceTree.types.Apartment;
-import com.example.smarthouse.backend.discovery.Discovery;
-import com.example.smarthouse.backend.discovery.DiscoveryService;
-import com.example.smarthouse.backend.deviceTree.SynchronisationWorker;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
-import java.util.concurrent.TimeUnit;
+import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
+import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
+import com.example.smarthouse.backend.deviceTree.types.Apartment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver {
 
@@ -43,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            if(service instanceof DeviceTreeService.LocalBinder) {
+            if (service instanceof DeviceTreeService.LocalBinder) {
                 DeviceTreeService.LocalBinder binder = (DeviceTreeService.LocalBinder) service;
                 deviceTreeService = binder.getService();
 
@@ -106,7 +96,9 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
         toast.show();
     }
-}
+
+
     public void onClickSettings(MenuItem item) {
         setContentView(R.layout.fragment_settings);
     }
+}
