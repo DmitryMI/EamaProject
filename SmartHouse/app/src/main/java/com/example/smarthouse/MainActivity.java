@@ -11,11 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
 import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
@@ -55,12 +52,24 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_devices, R.id.navigation_home, R.id.navigation_notifications)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
+
+        navView.setSelectedItemId(R.id.navigation_home);
+        navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_devices:
+                        startActivity(new Intent(getApplicationContext(), DevicesActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.navigation_home:
+                        return true;
+                }
+                return false;
+            }
+        });
+
 
         deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
         IntentFilter filter = new IntentFilter(DeviceTreeService.SyncFinishedAction);
@@ -69,10 +78,17 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         Intent intent = new Intent(this, DeviceTreeService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+
+    }
+
+    @Override
+    public void onDeviceTreeReceived() {
+        Apartment apartment = deviceTreeService.getDeviceTree();
+        Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.top_nav_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -90,15 +106,10 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDeviceTreeReceived() {
-        Apartment apartment = deviceTreeService.getDeviceTree();
-        Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
 
     public void onClickSettings(MenuItem item) {
         setContentView(R.layout.fragment_settings);
     }
+
+
 }

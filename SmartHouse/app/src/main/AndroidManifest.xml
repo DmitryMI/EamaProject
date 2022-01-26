@@ -12,10 +12,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".DevicesActivity"
+            android:exported="false" />
+
         <service
             android:name=".backend.discovery.DiscoveryService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
         <service
             android:name=".backend.deviceTree.DeviceTreeService"
             android:enabled="true"
