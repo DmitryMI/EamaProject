@@ -20,7 +20,7 @@ public class DevicesFragment extends Fragment {
             ViewGroup container, Bundle savedInstanceState) {
         devicesViewModel =
                 ViewModelProviders.of(this).get(DevicesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_devices, container, false);
+        View root = inflater.inflate(R.layout.activity_devices, container, false);
         final TextView textView = root.findViewById(R.id.text_devices);
         devicesViewModel.getText().observe(this, new Observer<String>() {
             @Override

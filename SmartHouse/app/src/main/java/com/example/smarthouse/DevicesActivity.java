@@ -16,7 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class DevicesActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_devices);
+        setContentView(R.layout.activity_devices);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

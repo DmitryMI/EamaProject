@@ -111,23 +111,5 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.navigation_settings:
-                onClickSettings(item);
-                break;
-            case R.id.app_bar_search:
-
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    public void onClickSettings(MenuItem item) {
-        setContentView(R.layout.fragment_settings);
-    }
-
 
 }
