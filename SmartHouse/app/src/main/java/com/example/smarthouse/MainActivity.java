@@ -40,9 +40,6 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
-    private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
-    private LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver;
-    MockDeviceTreeClient mockDeviceTreeClient;
     DrawApartment drawApartment;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -120,11 +117,11 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         drawApartment = new DrawApartment(this);
         addContentView(drawApartment, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
-        deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
+        DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
         IntentFilter deviceTreeFilter = new IntentFilter(DeviceTreeService.SyncFinishedAction);
         registerReceiver(deviceTreeBroadcastReceiver, deviceTreeFilter);
 
-        locationUpdatedBroadcastReceiver = new LocationUpdatedBroadcastReceiver(this);
+        LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver = new LocationUpdatedBroadcastReceiver(this);
         IntentFilter locationUpdateFilter = new IntentFilter(LocationService.LocationUpdatedAction);
         registerReceiver(locationUpdatedBroadcastReceiver, locationUpdateFilter);
 
