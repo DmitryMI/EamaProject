@@ -38,13 +38,13 @@ public class DevicesActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton startDishwasherButton = findViewById(R.id.startDishwasherButton);
+        ImageButton startWashingButton = findViewById(R.id.startWashingbutton);
 
 
-        startDishwasherButton.setOnClickListener(new View.OnClickListener() {
+        startWashingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(DevicesActivity.this, startDishwasherButton);
+                PopupMenu popup = new PopupMenu(DevicesActivity.this, startWashingButton);
                 popup.getMenuInflater().inflate(R.menu.start_menu, popup.getMenu());
 
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -64,7 +64,7 @@ public class DevicesActivity extends AppCompatActivity {
 
     }
 
-    public void stopDishwasherButton(View view) {
+    public void stopWashingButton(View view) {
         Toast.makeText(this, "You Clicked : Pause" , Toast.LENGTH_SHORT).show();
     }
 }
