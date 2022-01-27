@@ -13,10 +13,7 @@ public class WashingMachine extends Machine {
 
     public WashingMachine(int id, int x, int y, String name)
     {
-        this.id = id;
-        this.relativeX = x;
-        this.relativeY = y;
-        this.name = name;
+        super(id, x, y, name, WashingMachine.class.getName());
     }
 
     public float getWorkTimeLeft() {

@@ -51,4 +51,13 @@ public abstract class Appliance implements JsonReadable {
     public int getId() {
         return id;
     }
+
+    public Appliance(int id, float x, float y, String name, String applianceType)
+    {
+        this.id = id;
+        relativeX = x;
+        relativeY = y;
+        this.name = name;
+        this.applianceType = applianceType;
+    }
 }
