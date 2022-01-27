@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 public class LocationService extends Service {
     public final static String LocationUpdatedAction = "LOCATION_INFO_ACTION";
@@ -44,6 +45,11 @@ public class LocationService extends Service {
     public void requestLocationInfo()
     {
         WiFiApInfo[] wiFiApInfos = wiFiApInfoProvider.getApInfos(getApplicationContext());
+        for(WiFiApInfo apInfo : wiFiApInfos)
+        {
+            Log.i("SmartHouse LocationService", String.format("WiFi AP found: %s %3.2f", apInfo.getSsid(), apInfo.getSignalPower()));
+        }
+
         int roomId = locationClient.getRoomIndex(wiFiApInfos);
 
         locationInfo = new LocationInfo(roomId);
