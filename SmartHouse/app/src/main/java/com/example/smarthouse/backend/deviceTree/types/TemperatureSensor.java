@@ -12,10 +12,7 @@ public class TemperatureSensor extends Sensor {
 
     public TemperatureSensor(int id, float x, float y, String name)
     {
-        this.id = id;
-        this.relativeX = x;
-        this.relativeY = y;
-        this.name = name;
+        super(id, x, y, name, TemperatureSensor.class.getName());
     }
 
     public float getMeasurementInterval() {

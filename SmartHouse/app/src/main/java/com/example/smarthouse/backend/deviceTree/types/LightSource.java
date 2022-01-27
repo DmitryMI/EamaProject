@@ -12,10 +12,7 @@ public class LightSource extends Appliance{
 
     public LightSource(int id, float x, float y, String name)
     {
-        this.id = id;
-        this.relativeX = x;
-        this.relativeY = y;
-        this.name = name;
+        super(id, x, y, name, LightSource.class.getName());
     }
 
     public float getBrightness() {
