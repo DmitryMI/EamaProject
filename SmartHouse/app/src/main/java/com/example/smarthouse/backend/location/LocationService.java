@@ -9,13 +9,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.security.Permission;
-
 public class LocationService extends Service {
     public final static String LocationUpdatedAction = "LOCATION_INFO_ACTION";
 
     private LocationClient locationClient;
-    private NetworkInfoProvider wiFiApInfoProvider;
+    private NetworkInfoProvider networkInfoProvider;
     private final LocalBinder binder = new LocalBinder();
     private LocationInfo locationInfo;
 
@@ -28,9 +26,9 @@ public class LocationService extends Service {
         {
             locationClient = new MockLocationClient();
         }
-        if(wiFiApInfoProvider == null)
+        if(networkInfoProvider == null)
         {
-            wiFiApInfoProvider = new NetworkInfoProvider();
+            networkInfoProvider = new NetworkInfoProvider();
         }
     }
 
@@ -49,15 +47,26 @@ public class LocationService extends Service {
 
     private void sendLocationInfo()
     {
-        WiFiApInfo[] wiFiApInfos = wiFiApInfoProvider.getApInfos(getApplicationContext());
-        for(WiFiApInfo apInfo : wiFiApInfos)
-        {
-            Log.i("SmartHouse LocationService", String.format("WiFi AP found: %s %3.2f", apInfo.getSsid(), apInfo.getSignalPower()));
+        boolean isValid;
+        int roomId = 0;
+        NetworkState networkState = networkInfoProvider.getNetworkState(getApplicationContext());
+        isValid = networkState.hasWiFiConnection();
+        if(isValid) {
+            WiFiApInfo[] wiFiApInfos = networkInfoProvider.getApInfos(getApplicationContext());
+            for (WiFiApInfo apInfo : wiFiApInfos) {
+                Log.i("SmartHouse LocationService", String.format("WiFi AP found: %s %3.2f", apInfo.getSsid(), apInfo.getSignalPower()));
+            }
+
+            if(wiFiApInfos.length == 0)
+            {
+                isValid = false;
+            }
+            else {
+                roomId = locationClient.getRoomIndex(wiFiApInfos);
+            }
         }
 
-        int roomId = locationClient.getRoomIndex(wiFiApInfos);
-
-        locationInfo = new LocationInfo(roomId);
+        locationInfo = new LocationInfo(isValid, roomId);
 
         Intent intent = new Intent();
         intent.setAction(LocationUpdatedAction);

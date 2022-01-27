@@ -167,8 +167,15 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
     @Override
     public void onLocationReceived() {
         LocationInfo locationInfo = locationService.getLocation();
-        Toast toast = Toast.makeText(this, String.format("We are in room %d", locationInfo.getRoomId()), Toast.LENGTH_SHORT);
-        toast.show();
+        if(locationInfo.isValid()) {
+            Toast toast = Toast.makeText(this, String.format("We are in room %d", locationInfo.getRoomId()), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else
+        {
+            Toast toast = Toast.makeText(this, String.format("Location unknown"), Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
