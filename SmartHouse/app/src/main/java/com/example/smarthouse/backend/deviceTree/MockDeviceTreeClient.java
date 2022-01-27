@@ -47,12 +47,12 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         SimulatedWashingMachine washingMachine = new SimulatedWashingMachine(1, 2, 0, "Washing Machine");
         simulatedWashingMachines.add(washingMachine);
 
-        Room bathroom = new Room(2, "Bathroom", 4, 3, 4.5f, -1, new Appliance[] { bathroomLight, washingMachine });
+        Room bathroom = new Room(2, "Bathroom", 4, 2.5f, 4.5f, -1.25f, new Appliance[] { bathroomLight, washingMachine });
 
         SimulatedLightSource wcLight = new SimulatedLightSource(0, 0, 0, "WC Light");
         simulatedLights.add(wcLight);
 
-        Room wcRoom = new Room(3, "WC", 3, 2, 3.5f, 1.5f, new Appliance[] { wcLight });
+        Room wcRoom = new Room(3, "WC", 4, 2.5f, 4.5f, 1.25f, new Appliance[] { wcLight });
 
         apartment = new Apartment("Home", 10, 10, new Room[] { livingRoom, bedroom, bathroom, wcRoom });
 

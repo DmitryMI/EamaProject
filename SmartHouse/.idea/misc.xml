@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/DmitryBigPC/Documents/GitHub/EamaProject/SmartHouse/app/src/main/res/layout/activity_devices.xml" value="0.46875" />
+        <entry key="..\:/Users/DmitryBigPC/Documents/GitHub/EamaProject/SmartHouse/app/src/main/res/layout/activity_main.xml" value="0.46875" />
+        <entry key="..\:/Users/DmitryBigPC/Documents/GitHub/EamaProject/SmartHouse/app/src/main/res/layout/fragment_settings.xml" value="0.46875" />
         <entry key="..\:/Users/lykht/AndroidStudioProjects/SmartHouse/app/src/main/res/layout/fragment_devices.xml" value="0.22" />
         <entry key="..\:/Users/lykht/AndroidStudioProjects/SmartHouse/app/src/main/res/layout/fragment_home.xml" value="0.14666666666666667" />
         <entry key="..\:/Users/lykht/AndroidStudioProjects/SmartHouse/app/src/main/res/layout/fragment_notifications.xml" value="0.16666666666666666" />
@@ -19,7 +22,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

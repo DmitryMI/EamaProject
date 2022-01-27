@@ -110,10 +110,6 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
             }
         });
 
-        TextView currentTemperature = findViewById(R.id.currentTemperature);
-        Float temperature = 22.0f;
-        currentTemperature.setText("Current Temperature: " + temperature);
-
         drawApartment = new DrawApartment(this);
         addContentView(drawApartment, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
@@ -169,44 +165,7 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
         toast.show();
 
-        drawApartment(apartment);
-    }
-
-    private void drawApartment(Apartment apartment)
-    {
-        for(Room room : apartment.getRooms())
-        {
-            // Draw a room
-            for(Appliance appliance : room.getAppliances())
-            {
-                // Draw an icon for this appliance
-                if(appliance instanceof LightSource)
-                {
-                    // Draw Ligh Bulb icon
-                    LightSource lightSource = (LightSource) appliance;
-                    if(lightSource.isOn())
-                    {
-                        // Draw Bright icon
-                    }
-                    else
-                    {
-                        // Draw Dark icon
-                    }
-                }
-                else if(appliance instanceof WashingMachine)
-                {
-                    // Draw a Washing Machine icon
-                    // For additional info we need a separate Activity
-                }
-                else if(appliance instanceof TemperatureSensor)
-                {
-                    // Draw a TemperatureSensor icon
-                    TemperatureSensor temperatureSensor = (TemperatureSensor) appliance;
-                    float temperature = temperatureSensor.getValue();
-                    // Draw temperature
-                }
-            }
-        }
+        drawApartment.setApartment(apartment);
     }
 
     @Override
