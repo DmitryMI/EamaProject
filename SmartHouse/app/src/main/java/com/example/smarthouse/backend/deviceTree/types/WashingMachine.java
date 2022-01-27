@@ -11,7 +11,7 @@ public class WashingMachine extends Machine {
 
     }
 
-    public WashingMachine(int id, int x, int y, String name)
+    public WashingMachine(int id, float x, float y, String name)
     {
         super(id, x, y, name, WashingMachine.class.getName());
     }

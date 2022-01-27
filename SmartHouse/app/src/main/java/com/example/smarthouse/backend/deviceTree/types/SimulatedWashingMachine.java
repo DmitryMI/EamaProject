@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public class SimulatedWashingMachine extends WashingMachine{
-    public SimulatedWashingMachine(int id, int x, int y, String name) {
+    public SimulatedWashingMachine(int id, float x, float y, String name) {
         super(id, x, y, name);
     }
 
