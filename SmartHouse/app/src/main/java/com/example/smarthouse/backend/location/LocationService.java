@@ -1,16 +1,21 @@
 package com.example.smarthouse.backend.location;
 
+import android.Manifest;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
+import java.security.Permission;
 
 public class LocationService extends Service {
     public final static String LocationUpdatedAction = "LOCATION_INFO_ACTION";
 
     private LocationClient locationClient;
-    private WiFiApInfoProvider wiFiApInfoProvider;
+    private NetworkInfoProvider wiFiApInfoProvider;
     private final LocalBinder binder = new LocalBinder();
     private LocationInfo locationInfo;
 
@@ -25,7 +30,7 @@ public class LocationService extends Service {
         }
         if(wiFiApInfoProvider == null)
         {
-            wiFiApInfoProvider = new WiFiApInfoProvider();
+            wiFiApInfoProvider = new NetworkInfoProvider();
         }
     }
 
@@ -42,7 +47,7 @@ public class LocationService extends Service {
         return locationInfo;
     }
 
-    public void requestLocationInfo()
+    private void sendLocationInfo()
     {
         WiFiApInfo[] wiFiApInfos = wiFiApInfoProvider.getApInfos(getApplicationContext());
         for(WiFiApInfo apInfo : wiFiApInfos)
@@ -57,6 +62,21 @@ public class LocationService extends Service {
         Intent intent = new Intent();
         intent.setAction(LocationUpdatedAction);
         getApplicationContext().sendBroadcast(intent);
+    }
+
+
+
+    public void requestLocationInfo()
+    {
+        Context context = getApplicationContext();
+        if(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            Log.e("SmartHouse LocationService", "ACCESS_FINE_LOCATION not granted");
+        }
+        else
+        {
+            sendLocationInfo();
+        }
     }
 
     @Override

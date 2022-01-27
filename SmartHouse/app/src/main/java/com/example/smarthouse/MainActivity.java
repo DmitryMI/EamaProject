@@ -1,10 +1,12 @@
 package com.example.smarthouse;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -13,6 +15,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,6 +30,7 @@ import com.example.smarthouse.backend.location.LocationUpdatedBroadcastReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver, LocationUpdatedBroadcastReceiver.LocationUpdateReceiver {
+    public static final int FineLocationPermissionRequestCode = 100;
 
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
@@ -117,8 +122,39 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         Intent deviceTreeServiceBind = new Intent(this, DeviceTreeService.class);
         bindService(deviceTreeServiceBind, serviceConnection, Context.BIND_AUTO_CREATE);
 
-        Intent locationServiceBind = new Intent(this, LocationService.class);
-        bindService(locationServiceBind, serviceConnection, Context.BIND_AUTO_CREATE);
+        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            Intent locationServiceBind = new Intent(this, LocationService.class);
+            bindService(locationServiceBind, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+        else {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FineLocationPermissionRequestCode);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == FineLocationPermissionRequestCode) {
+
+            // Checking whether user granted the permission or not.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                // Showing the toast message
+                Toast.makeText(MainActivity.this, "ACCESS_FINE_LOCATION Permission Granted", Toast.LENGTH_SHORT).show();
+
+                Intent locationServiceBind = new Intent(this, LocationService.class);
+                bindService(locationServiceBind, serviceConnection, Context.BIND_AUTO_CREATE);
+            }
+            else {
+                Toast.makeText(MainActivity.this, "ACCESS_FINE_LOCATION Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -139,4 +175,5 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         getMenuInflater().inflate(R.menu.top_nav_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 }
