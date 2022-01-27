@@ -13,17 +13,12 @@ import com.example.smarthouse.backend.deviceTree.types.Room;
 
 public class DrawApartment extends View {
 
-    Paint paint;
-    Rect rect;
-
     Apartment apartment;
 
     private float scaleDefault = 80.0f;
 
     public DrawApartment(Context context) {
         super(context);
-        paint = new Paint();
-        rect = new Rect();
     }
 
     public void setApartment(Apartment apartment)
@@ -40,9 +35,6 @@ public class DrawApartment extends View {
         {
             return;
         }
-
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(8);
 
         for (Room room : apartment.getRooms())
         {
@@ -76,9 +68,6 @@ public class DrawApartment extends View {
     {
         float scale = getAutoScale();
 
-        int canvasWidth = canvas.getWidth();
-        int canvasHeight = canvas.getHeight();
-
         int x = (int)(room.getRelativeX() * scale);
         int y = (int)(room.getRelativeY() * scale);
         int halfWidth = (int)(room.getWidth() * scale / 2);
@@ -87,7 +76,11 @@ public class DrawApartment extends View {
         Point leftTop = transformPoint(canvas, x - halfWidth, y - halfHeight);
         Point rightBottom = transformPoint(canvas, x + halfWidth, y + halfHeight);
 
-        canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, paint);
+        Paint roomBordersPaint = new Paint();
+        roomBordersPaint.setStyle(Paint.Style.STROKE);
+        roomBordersPaint.setStrokeWidth(8);
+
+        canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, roomBordersPaint);
 
         Paint roomNamePaint = new Paint();
         roomNamePaint.setTextSize(20);
