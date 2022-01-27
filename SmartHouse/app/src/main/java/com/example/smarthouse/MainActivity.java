@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
     private LocationService locationService;
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
     private LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver;
-    MockDeviceTreeClient mockDeviceTreeClient;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
