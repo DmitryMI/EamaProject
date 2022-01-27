@@ -12,11 +12,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,6 +27,7 @@ import com.example.smarthouse.backend.deviceTree.types.Apartment;
 import com.example.smarthouse.backend.location.LocationInfo;
 import com.example.smarthouse.backend.location.LocationService;
 import com.example.smarthouse.backend.location.LocationUpdatedBroadcastReceiver;
+import com.example.smarthouse.ui.DrawApartment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver, LocationUpdatedBroadcastReceiver.LocationUpdateReceiver {
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
     private LocationService locationService;
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
     private LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver;
+    MockDeviceTreeClient mockDeviceTreeClient;
+    DrawApartment drawApartment;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -106,9 +109,11 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         });
 
         TextView currentTemperature = findViewById(R.id.currentTemperature);
-        //Float temperature = 22.0f;
-        //currentTemperature.setText("Current Temperature " + temperature + "}");
+        Float temperature = 22.0f;
+        currentTemperature.setText("Current Temperature: " + temperature);
 
+        drawApartment = new DrawApartment(this);
+        addContentView(drawApartment, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
         deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
         IntentFilter deviceTreeFilter = new IntentFilter(DeviceTreeService.SyncFinishedAction);
@@ -182,4 +187,8 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         return super.onCreateOptionsMenu(menu);
     }
 
+
+    public void startLight(View view) {
+        Toast.makeText(this, "You Clicked : Light" , Toast.LENGTH_SHORT).show();
+    }
 }
