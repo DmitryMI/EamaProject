@@ -27,7 +27,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
+    <ImageView
+        android:id="@+id/temperatureSource"
+        android:layout_width="19dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="301dp"
+        android:layout_marginTop="377dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/temp1" />
 
     <!--ImageButton
         android:id="@+id/lightSource"
@@ -57,18 +65,7 @@
         android:layout_marginTop="367dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/light" />
-
-
-    <ImageView
-        android:id="@+id/temperatureSource"
-        android:layout_width="19dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="301dp"
-        android:layout_marginTop="377dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/temp1" /-->
+        app:srcCompat="@drawable/light" /-->
 
 
 </RelativeLayout>
