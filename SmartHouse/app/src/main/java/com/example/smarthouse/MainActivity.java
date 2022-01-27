@@ -24,6 +24,11 @@ import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
 import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
 import com.example.smarthouse.backend.deviceTree.MockDeviceTreeClient;
 import com.example.smarthouse.backend.deviceTree.types.Apartment;
+import com.example.smarthouse.backend.deviceTree.types.Appliance;
+import com.example.smarthouse.backend.deviceTree.types.LightSource;
+import com.example.smarthouse.backend.deviceTree.types.Room;
+import com.example.smarthouse.backend.deviceTree.types.TemperatureSensor;
+import com.example.smarthouse.backend.deviceTree.types.WashingMachine;
 import com.example.smarthouse.backend.location.LocationInfo;
 import com.example.smarthouse.backend.location.LocationService;
 import com.example.smarthouse.backend.location.LocationUpdatedBroadcastReceiver;
@@ -166,6 +171,45 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         Apartment apartment = deviceTreeService.getDeviceTree();
         Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
         toast.show();
+
+        drawApartment(apartment);
+    }
+
+    private void drawApartment(Apartment apartment)
+    {
+        for(Room room : apartment.getRooms())
+        {
+            // Draw a room
+            for(Appliance appliance : room.getAppliances())
+            {
+                // Draw an icon for this appliance
+                if(appliance instanceof LightSource)
+                {
+                    // Draw Ligh Bulb icon
+                    LightSource lightSource = (LightSource) appliance;
+                    if(lightSource.isOn())
+                    {
+                        // Draw Bright icon
+                    }
+                    else
+                    {
+                        // Draw Dark icon
+                    }
+                }
+                else if(appliance instanceof WashingMachine)
+                {
+                    // Draw a Washing Machine icon
+                    // For additional info we need a separate Activity
+                }
+                else if(appliance instanceof TemperatureSensor)
+                {
+                    // Draw a TemperatureSensor icon
+                    TemperatureSensor temperatureSensor = (TemperatureSensor) appliance;
+                    float temperature = temperatureSensor.getValue();
+                    // Draw temperature
+                }
+            }
+        }
     }
 
     @Override
