@@ -32,7 +32,7 @@ public class DrawApartment extends View {
     private static final float textSize = 0.3f;
     private static final int margin = 100;
 
-    private final float scaleDefault = 80.0f;
+    private static final float scaleDefault = 80.0f;
     private float autoScale;
 
     public DrawApartment(Context context) {
