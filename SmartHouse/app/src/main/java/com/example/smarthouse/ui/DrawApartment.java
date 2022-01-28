@@ -8,9 +8,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.smarthouse.R;
+import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
 import com.example.smarthouse.backend.deviceTree.types.Apartment;
 import com.example.smarthouse.backend.deviceTree.types.Appliance;
 import com.example.smarthouse.backend.deviceTree.types.LightSource;
@@ -19,6 +22,7 @@ import com.example.smarthouse.backend.deviceTree.types.Room;
 import com.example.smarthouse.backend.deviceTree.types.Sensor;
 import com.example.smarthouse.backend.deviceTree.types.TemperatureSensor;
 import com.example.smarthouse.backend.deviceTree.types.WashingMachine;
+import com.example.smarthouse.backend.location.LocationService;
 
 import java.util.Locale;
 
@@ -26,14 +30,20 @@ public class DrawApartment extends View {
 
     Apartment apartment;
 
-    private static final float lightSourceSize = 0.5f;
-    private static final float sensorSize = 0.5f;
-    private static final float machineSize = 1f;
+    private static final float lightSourceSize = 0.7f;
+    private static final float sensorSize = 0.7f;
+    private static final float machineSize = 1.3f;
     private static final float textSize = 0.3f;
     private static final int margin = 100;
+    private static final int clickEventMaxDelta = 200;
 
     private static final float scaleDefault = 80.0f;
+    private DeviceTreeService deviceTreeService;
+    private LocationService locationService;
     private float autoScale;
+
+    private float touchStartX;
+    private float touchStartY;
 
     public DrawApartment(Context context) {
         super(context);
@@ -65,6 +75,81 @@ public class DrawApartment extends View {
                 drawAppliance(canvas, room, appliance);
             }
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent)
+    {
+        if(deviceTreeService == null)
+        {
+            return true;
+        }
+
+        int action = motionEvent.getAction();
+
+        //Log.i("SmartHouse DrawApartment", motionEvent.toString());
+
+        switch(action) {
+
+            case (MotionEvent.ACTION_DOWN) :
+                touchStartX = motionEvent.getX();
+                touchStartY = motionEvent.getY();
+                return true;
+            case (MotionEvent.ACTION_MOVE) :
+                return true;
+            case (MotionEvent.ACTION_UP) :
+                float touchStopX = motionEvent.getX();
+                float touchStopY = motionEvent.getY();
+                if(Math.abs(touchStopX - touchStartX) < clickEventMaxDelta && Math.abs(touchStopY - touchStartY) < clickEventMaxDelta)
+                {
+                    onClick(touchStopX, touchStopY);
+                    performClick();
+                }
+                return true;
+            case (MotionEvent.ACTION_CANCEL) :
+                return true;
+            case (MotionEvent.ACTION_OUTSIDE) :
+                return true;
+            default :
+                return super.onTouchEvent(motionEvent);
+        }
+    }
+
+    private void onClick(float x, float y)
+    {
+        for(Room room : apartment.getRooms())
+        {
+            for(Appliance appliance : room.getAppliances())
+            {
+                Rect boundingBox = getApplianceBoundingBox(room, appliance);
+                if(boundingBox.contains((int)x, (int)y))
+                {
+                    onClick(x, y, room, appliance);
+                }
+            }
+        }
+    }
+
+    private void onClick(float x, float y, Room room, Appliance appliance)
+    {
+        if(appliance instanceof LightSource)
+        {
+            LightSource lightSource = (LightSource) appliance;
+            boolean isOn = lightSource.isOn();
+            lightSource.setIsOn(!isOn);
+            deviceTreeService.sendDeviceTree(apartment);
+        }
+        if(appliance instanceof WashingMachine)
+        {
+            WashingMachine washingMachine = (WashingMachine) appliance;
+            // TODO Open Washing Machine activity
+        }
+    }
+
+    @Override
+    public boolean performClick()
+    {
+        return super.performClick();
     }
 
     private void setAutoScale(Canvas canvas)
@@ -256,6 +341,14 @@ public class DrawApartment extends View {
             //int xCentered = temperatureLabelPosition.x;
             canvas.drawText(temperatureText, xCentered, yShifted, temperaturePaint);
         }
+    }
+
+    public void setDeviceTreeService(DeviceTreeService deviceTreeService) {
+        this.deviceTreeService = deviceTreeService;
+    }
+
+    public void setLocationService(LocationService locationService) {
+        this.locationService = locationService;
     }
 }
 

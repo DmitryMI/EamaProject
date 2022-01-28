@@ -112,6 +112,11 @@ public class RestClient extends DeviceTreeClient{
     }
 
     @Override
+    public void setApartment(Apartment apartment) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void getAppliance(ObjectReceivedCallback<Appliance> callback, int roomId, int applianceId) {
         String url = String.format(applianceUrl, roomId, applianceId);
         JsonResponseListener<Appliance> responseListener = new JsonResponseListener<>(Appliance.class, callback);

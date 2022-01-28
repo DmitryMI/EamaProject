@@ -1,5 +1,7 @@
 package com.example.smarthouse.backend.deviceTree;
 
+import android.util.Log;
+
 import com.example.smarthouse.backend.deviceTree.types.Apartment;
 import com.example.smarthouse.backend.deviceTree.types.Appliance;
 import com.example.smarthouse.backend.deviceTree.types.LightSource;
@@ -118,6 +120,14 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
             callback.onObjectReceived(value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setApartment(Apartment apartment) {
+        if(this.apartment != apartment)
+        {
+            Log.e("SmartHouse MockDeviceTreeClient", "Somebody allocated another Apartment!");
         }
     }
 

@@ -17,6 +17,7 @@ public abstract class DeviceTreeClient {
 
     public abstract void setVariable(int roomId, int applianceId, String variable, Object value);
     public abstract void getVariable(ObjectReceivedCallback<Object> callback, int roomId, int applianceId, String variable);
+    public abstract void setApartment(Apartment apartment);
     public abstract void getAppliance(ObjectReceivedCallback<Appliance> callback, int roomId, int applianceId);
     public abstract void getRoom(ObjectReceivedCallback<Room> callback, int roomId);
     public abstract void getApartment(ObjectReceivedCallback<Apartment> callback);

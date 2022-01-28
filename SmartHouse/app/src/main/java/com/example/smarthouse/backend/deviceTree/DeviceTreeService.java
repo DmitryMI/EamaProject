@@ -141,4 +141,16 @@ public class DeviceTreeService extends Service {
         }
     }
 
+    private void sendDeviceTreeInternal(Apartment apartment)
+    {
+        deviceTreeClientInstance.setApartment(apartment);
+    }
+
+    public void sendDeviceTree(Apartment apartment) {
+        this.apartment = apartment;
+        assert discoveryService != null;
+        sendDeviceTreeInternal(apartment);
+        requestDeviceTreeUpdate();
+    }
+
 }

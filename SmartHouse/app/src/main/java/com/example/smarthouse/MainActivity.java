@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
                 deviceTreeService = binder.getService();
                 deviceTreeService.requestDeviceTreeUpdate();
 
+                drawApartment.setDeviceTreeService(deviceTreeService);
+
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -72,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
                 LocationService.LocalBinder binder = (LocationService.LocalBinder) service;
                 locationService = binder.getService();
                 locationService.requestLocationInfo();
+
+                drawApartment.setLocationService(locationService);
 
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
