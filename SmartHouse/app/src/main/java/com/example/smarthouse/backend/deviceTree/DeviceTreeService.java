@@ -94,6 +94,12 @@ public class DeviceTreeService extends Service {
     }
 
     @Override
+    public void onDestroy() {
+        unbindService(serviceConnection);
+    }
+
+
+    @Override
     public IBinder onBind(Intent intent) {
 
         return binder;

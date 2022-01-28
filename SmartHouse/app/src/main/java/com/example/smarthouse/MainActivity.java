@@ -40,7 +40,11 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
-    DrawApartment drawApartment;
+
+    private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
+    private LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver;
+
+    private DrawApartment drawApartment;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -53,6 +57,15 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
                 DeviceTreeService.LocalBinder binder = (DeviceTreeService.LocalBinder) service;
                 deviceTreeService = binder.getService();
                 deviceTreeService.requestDeviceTreeUpdate();
+
+                Handler handler=new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        deviceTreeService.requestDeviceTreeUpdate();
+                        handler.postDelayed(this,1000);
+                    }
+                },1000);
             }
             if(service instanceof LocationService.LocalBinder)
             {
@@ -89,36 +102,37 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-
-        navView.setSelectedItemId(R.id.navigation_home);
-        navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_devices:
-                        startActivity(new Intent(getApplicationContext(), DevicesActivity.class));
-                        overridePendingTransition(0, 0);
-                        return true;
-                    case R.id.navigation_notifications:
-                        startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
-                        overridePendingTransition(0, 0);
-                        return true;
-                    case R.id.navigation_home:
-                        return true;
+        if(navView != null) {
+            navView.setSelectedItemId(R.id.navigation_home);
+            navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_devices:
+                            startActivity(new Intent(getApplicationContext(), DevicesActivity.class));
+                            overridePendingTransition(0, 0);
+                            return true;
+                        case R.id.navigation_notifications:
+                            startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
+                            overridePendingTransition(0, 0);
+                            return true;
+                        case R.id.navigation_home:
+                            return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        }
 
-        drawApartment = new DrawApartment(this);
-        addContentView(drawApartment, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        //drawApartment = findViewById(R.id.drawApartment);
+        //drawApartment = new DrawApartment(this);
+        //addContentView(drawApartment, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        drawApartment = findViewById(R.id.drawApartment);
 
-        DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
+        deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
         IntentFilter deviceTreeFilter = new IntentFilter(DeviceTreeService.SyncFinishedAction);
         registerReceiver(deviceTreeBroadcastReceiver, deviceTreeFilter);
 
-        LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver = new LocationUpdatedBroadcastReceiver(this);
+        locationUpdatedBroadcastReceiver = new LocationUpdatedBroadcastReceiver(this);
         IntentFilter locationUpdateFilter = new IntentFilter(LocationService.LocationUpdatedAction);
         registerReceiver(locationUpdatedBroadcastReceiver, locationUpdateFilter);
 
@@ -133,7 +147,14 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         else {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FineLocationPermissionRequestCode);
         }
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
+        unregisterReceiver(deviceTreeBroadcastReceiver);
+        unregisterReceiver(locationUpdatedBroadcastReceiver);
     }
 
     @Override
@@ -163,9 +184,6 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
     @Override
     public void onDeviceTreeReceived() {
         Apartment apartment = deviceTreeService.getDeviceTree();
-        Toast toast = Toast.makeText(this, String.format("Apartment has %d rooms", apartment.getRooms().length), Toast.LENGTH_SHORT);
-        toast.show();
-
         drawApartment.setApartment(apartment);
     }
 
@@ -173,23 +191,16 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
     public void onLocationReceived() {
         LocationInfo locationInfo = locationService.getLocation();
         if(locationInfo.isValid()) {
-            Toast toast = Toast.makeText(this, String.format("We are in room %d", locationInfo.getRoomId()), Toast.LENGTH_SHORT);
-            toast.show();
+
         }
         else
         {
-            Toast toast = Toast.makeText(this, String.format("Location unknown"), Toast.LENGTH_SHORT);
-            toast.show();
+
         }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_nav_menu, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-
-    public void startLight(View view) {
-        Toast.makeText(this, "You Clicked : Light" , Toast.LENGTH_SHORT).show();
     }
 }

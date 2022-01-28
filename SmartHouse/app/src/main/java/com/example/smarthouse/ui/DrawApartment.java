@@ -173,8 +173,11 @@ public class DrawApartment extends View {
 
     private Bitmap resizedBitmap(Bitmap bitmap, float size) {
         float scale = getAutoScale();
+        float ratio = (float)bitmap.getWidth() / bitmap.getHeight();
+        float widthScaled = size * scale;
+        float heightScaled = widthScaled / ratio;
         return Bitmap.createScaledBitmap(
-                bitmap, (int)(size * scale), (int)(size * scale), false);
+                bitmap, (int)widthScaled, (int)heightScaled, false);
     }
 
     private Rect getApplianceBoundingBox(Room room, Appliance appliance)

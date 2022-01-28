@@ -29,7 +29,7 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
     {
         SimulatedLightSource livingRoomPrimaryLight = new SimulatedLightSource(0, 0, 0, "Living Room Light");
         simulatedLights.add(livingRoomPrimaryLight);
-        SimulatedLightSource livingRoomWallLight = new SimulatedLightSource(1, 2.4f, 0, "Living Room Wall Light");
+        SimulatedLightSource livingRoomWallLight = new SimulatedLightSource(1, 2.0f, 0, "Living Room Wall Light");
         simulatedLights.add(livingRoomWallLight);
         SimulatedTemperatureSensor temperatureSensor = new SimulatedTemperatureSensor(2, -2.0f, 2.0f, "Living Room Temperature Sensor");
         simulatedTemperatureSensors.add(temperatureSensor);
@@ -84,9 +84,9 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         public void run() {
             while (!stopSimulation)
             {
-                simulationLoop(1000);
+                simulationLoop(10000);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -126,4 +126,9 @@ public class DiscoveryService extends Service implements DiscoveryBroadcastRecei
         }
         return localBinder;
     }
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(discoveryBroadcastReceiver);
+    }
 }
