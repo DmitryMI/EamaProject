@@ -37,6 +37,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver, LocationUpdatedBroadcastReceiver.LocationUpdateReceiver {
     public static final int FineLocationPermissionRequestCode = 100;
+    private static final int DeviceTreeRefreshRateMs = 5000;
+    private static final int LocationRefreshRateMs = 10000;
 
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
@@ -65,9 +67,9 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
                     @Override
                     public void run() {
                         deviceTreeService.requestDeviceTreeUpdate();
-                        handler.postDelayed(this,1000);
+                        handler.postDelayed(this,DeviceTreeRefreshRateMs);
                     }
-                },1000);
+                },DeviceTreeRefreshRateMs);
             }
             if(service instanceof LocationService.LocalBinder)
             {
@@ -82,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
                     @Override
                     public void run() {
                         locationService.requestLocationInfo();
-                        handler.postDelayed(this,10000);
+                        handler.postDelayed(this,LocationRefreshRateMs);
                     }
-                },10000);
+                },LocationRefreshRateMs);
             }
         }
 
@@ -187,12 +189,20 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
     @Override
     public void onDeviceTreeReceived() {
+        if(deviceTreeService == null)
+        {
+            return;
+        }
         Apartment apartment = deviceTreeService.getDeviceTree();
         drawApartment.setApartment(apartment);
     }
 
     @Override
     public void onLocationReceived() {
+        if(locationService == null)
+        {
+            return;
+        }
         LocationInfo locationInfo = locationService.getLocation();
         if(locationInfo.isValid()) {
 

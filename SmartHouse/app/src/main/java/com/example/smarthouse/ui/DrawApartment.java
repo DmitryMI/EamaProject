@@ -124,14 +124,16 @@ public class DrawApartment extends View {
                 Rect boundingBox = getApplianceBoundingBox(room, appliance);
                 if(boundingBox.contains((int)x, (int)y))
                 {
-                    onClick(x, y, room, appliance);
+                    onClick(x, y, boundingBox, room, appliance);
                 }
             }
         }
     }
 
-    private void onClick(float x, float y, Room room, Appliance appliance)
+    private void onClick(float x, float y, Rect boundingBox, Room room, Appliance appliance)
     {
+        Log.i("SmartHouse DrawApartment", appliance.getName() + " clicked");
+
         if(appliance instanceof LightSource)
         {
             LightSource lightSource = (LightSource) appliance;
