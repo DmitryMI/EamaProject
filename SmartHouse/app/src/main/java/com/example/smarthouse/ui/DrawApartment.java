@@ -117,6 +117,7 @@ public class DrawApartment extends View {
 
     private void onClick(float x, float y)
     {
+        boolean somethingClicked = false;
         for(Room room : apartment.getRooms())
         {
             for(Appliance appliance : room.getAppliances())
@@ -125,7 +126,13 @@ public class DrawApartment extends View {
                 if(boundingBox.contains((int)x, (int)y))
                 {
                     onClick(x, y, boundingBox, room, appliance);
+                    somethingClicked = true;
+                    break;
                 }
+            }
+            if(somethingClicked)
+            {
+                break;
             }
         }
     }
@@ -139,6 +146,7 @@ public class DrawApartment extends View {
             LightSource lightSource = (LightSource) appliance;
             boolean isOn = lightSource.isOn();
             lightSource.setIsOn(!isOn);
+            invalidate();
             deviceTreeService.sendDeviceTree(apartment);
         }
         if(appliance instanceof WashingMachine)
