@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
         drawApartment = new DrawApartment(this);
         addContentView(drawApartment, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        //drawApartment = findViewById(R.id.drawApartment);
 
         DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver = new DeviceTreeBroadcastReceiver(this);
         IntentFilter deviceTreeFilter = new IntentFilter(DeviceTreeService.SyncFinishedAction);

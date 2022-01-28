@@ -31,7 +31,7 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         simulatedLights.add(livingRoomPrimaryLight);
         SimulatedLightSource livingRoomWallLight = new SimulatedLightSource(1, 2.4f, 0, "Living Room Wall Light");
         simulatedLights.add(livingRoomWallLight);
-        SimulatedTemperatureSensor temperatureSensor = new SimulatedTemperatureSensor(2, -2.4f, 2.4f, "Living Room Temperature Sensor");
+        SimulatedTemperatureSensor temperatureSensor = new SimulatedTemperatureSensor(2, -2.0f, 2.0f, "Living Room Temperature Sensor");
         simulatedTemperatureSensors.add(temperatureSensor);
 
         Room livingRoom = new Room(0, "Living Room", 5, 5, 0, 0, new Appliance[] { livingRoomPrimaryLight, livingRoomWallLight, temperatureSensor });
@@ -44,7 +44,7 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         SimulatedLightSource bathroomLight = new SimulatedLightSource(0, 0, 0, "Bathroom Light");
         simulatedLights.add(bathroomLight);
 
-        SimulatedWashingMachine washingMachine = new SimulatedWashingMachine(1, 2.55f, -1.9f, "Washing Machine");
+        SimulatedWashingMachine washingMachine = new SimulatedWashingMachine(1, 1.5f, 0, "Washing Machine");
         simulatedWashingMachines.add(washingMachine);
 
         Room bathroom = new Room(2, "Bathroom", 4, 2.5f, 4.5f, -1.25f, new Appliance[] { bathroomLight, washingMachine });

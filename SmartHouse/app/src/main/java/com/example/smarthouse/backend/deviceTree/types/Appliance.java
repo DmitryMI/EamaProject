@@ -4,8 +4,6 @@ public abstract class Appliance implements JsonReadable {
 
     protected int id;
     protected String name;
-    protected float width;
-    protected float height;
     protected float relativeX;
     protected float relativeY;
     protected boolean isOn;
@@ -13,14 +11,6 @@ public abstract class Appliance implements JsonReadable {
 
     public String getName() {
         return name;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public float getHeight() {
-        return height;
     }
 
     public float getRelativeX() {

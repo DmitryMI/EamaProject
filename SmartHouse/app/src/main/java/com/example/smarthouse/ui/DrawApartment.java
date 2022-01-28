@@ -8,29 +8,39 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.ImageView;
-
-import androidx.core.content.res.ResourcesCompat;
 
 import com.example.smarthouse.R;
 import com.example.smarthouse.backend.deviceTree.types.Apartment;
 import com.example.smarthouse.backend.deviceTree.types.Appliance;
 import com.example.smarthouse.backend.deviceTree.types.LightSource;
+import com.example.smarthouse.backend.deviceTree.types.Machine;
 import com.example.smarthouse.backend.deviceTree.types.Room;
+import com.example.smarthouse.backend.deviceTree.types.Sensor;
 import com.example.smarthouse.backend.deviceTree.types.TemperatureSensor;
 import com.example.smarthouse.backend.deviceTree.types.WashingMachine;
+
+import java.util.Locale;
 
 public class DrawApartment extends View {
 
     Apartment apartment;
 
-    private float scaleDefault = 80.0f;
+    private static final float lightSourceSize = 0.5f;
+    private static final float sensorSize = 0.5f;
+    private static final float machineSize = 1f;
+    private static final float textSize = 0.3f;
+    private static final int margin = 100;
+
+    private final float scaleDefault = 80.0f;
+    private float autoScale;
 
     public DrawApartment(Context context) {
         super(context);
+    }
+    public DrawApartment(Context context, android.util.AttributeSet attributeSet)
+    {
+        super(context, attributeSet);
     }
 
     public void setApartment(Apartment apartment) {
@@ -46,6 +56,8 @@ public class DrawApartment extends View {
             return;
         }
 
+        setAutoScale(canvas);
+
         for (Room room : apartment.getRooms()) {
             drawRoom(canvas, room);
 
@@ -55,14 +67,73 @@ public class DrawApartment extends View {
         }
     }
 
-    private float getAutoScale() {
-        // TODO Detect Scale automatically to fit the graphics best
-        return scaleDefault;
+    private void setAutoScale(Canvas canvas)
+    {
+        if(apartment == null)
+        {
+            autoScale = scaleDefault;
+            return;
+        }
+
+        float drawingRegionWidth = getWidth() - margin;
+        float drawingRegionHeight = getHeight() - margin;
+
+        float apartmentMinX = 0;
+        float apartmentMinY = 0;
+        float apartmentMaxX = 0;
+        float apartmentMaxY = 0;
+        for(Room room : apartment.getRooms())
+        {
+            float x = room.getRelativeX();
+            float y = room.getRelativeY();
+            float w = room.getWidth() / 2;
+            float h = room.getHeight() / 2;
+
+            float minX = x - w;
+            if(minX < apartmentMinX)
+            {
+                apartmentMinX = minX;
+            }
+
+            float minY = y - h;
+            if(minY < apartmentMinY)
+            {
+                apartmentMinY = minY;
+            }
+
+            float maxX = x + w;
+            if(maxX > apartmentMaxX)
+            {
+                apartmentMaxX = maxX;
+            }
+
+            float maxY = y + h;
+            if(maxY > apartmentMaxY)
+            {
+                apartmentMaxY = maxY;
+            }
+        }
+
+        float apartmentWidth = apartmentMaxX - apartmentMinX;
+        float apartmentHeight = apartmentMaxY - apartmentMinY;
+
+        float xScale = drawingRegionWidth / apartmentWidth;
+        float yScale = drawingRegionHeight / apartmentHeight;
+        autoScale = Math.min(xScale, yScale);
     }
 
-    private Point transformPoint(Canvas canvas, float x, float y) {
-        int canvasWidth = canvas.getWidth();
-        int canvasHeight = canvas.getHeight();
+    private float getAutoScale() {
+        return autoScale;
+    }
+
+    private int alightTextX(float originalPositionX, float textSize, int textLength)
+    {
+       return (int)(originalPositionX - textLength / 2 * textSize * 0.5);
+    }
+
+    private Point transformPoint(float x, float y) {
+        int canvasWidth = getWidth();
+        int canvasHeight = getHeight();
 
         int canvasHalfWidth = canvasWidth / 2;
         int canvasHalfHeight = canvasHeight / 2;
@@ -73,13 +144,13 @@ public class DrawApartment extends View {
     private void drawRoom(Canvas canvas, Room room) {
         float scale = getAutoScale();
 
-        int x = (int) (room.getRelativeX() * scale);
-        int y = (int) (room.getRelativeY() * scale);
-        int halfWidth = (int) (room.getWidth() * scale / 2);
-        int halfHeight = (int) (room.getHeight() * scale / 2);
+        float x = (room.getRelativeX() * scale);
+        float y = (room.getRelativeY() * scale);
+        float halfWidth = (room.getWidth() * scale / 2);
+        float halfHeight = (room.getHeight() * scale / 2);
 
-        Point leftTop = transformPoint(canvas, x - halfWidth, y - halfHeight);
-        Point rightBottom = transformPoint(canvas, x + halfWidth, y + halfHeight);
+        Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
+        Point rightBottom = transformPoint(x + halfWidth, y - halfHeight);
 
         Paint roomBordersPaint = new Paint();
         roomBordersPaint.setStyle(Paint.Style.STROKE);
@@ -88,17 +159,56 @@ public class DrawApartment extends View {
         canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, roomBordersPaint);
 
         Paint roomNamePaint = new Paint();
-        roomNamePaint.setTextSize(20);
+        float fontSize = textSize * scale;
+        roomNamePaint.setTextSize(fontSize);
 
-        Point roomNamePosition = transformPoint(canvas, x, y);
+        Point roomNamePosition = transformPoint(x, y);
 
-        canvas.drawText(room.getName(), roomNamePosition.x, roomNamePosition.y, roomNamePaint);
+        String roomName = room.getName();
+        //int xCentered = (int)(roomNamePosition.x - roomName.length() / 2 * fontSize * 0.5);
+        int xCentered = alightTextX(roomNamePosition.x, fontSize, roomName.length());
+        int yOffsetted = (int)(roomNamePosition.y - 0.5 * scale);
+        canvas.drawText(roomName, xCentered, yOffsetted, roomNamePaint);
     }
 
-    private Bitmap resizedBitmap(Bitmap bitmap) {
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-                bitmap, 40, 40, false);
-        return resizedBitmap;
+    private Bitmap resizedBitmap(Bitmap bitmap, float size) {
+        float scale = getAutoScale();
+        return Bitmap.createScaledBitmap(
+                bitmap, (int)(size * scale), (int)(size * scale), false);
+    }
+
+    private Rect getApplianceBoundingBox(Room room, Appliance appliance)
+    {
+        float scale = getAutoScale();
+
+        float relativeX = appliance.getRelativeX() + room.getRelativeX();
+        float relativeY = appliance.getRelativeY() + room.getRelativeY();
+
+        float x = (relativeX * scale);
+        float y = (relativeY * scale);
+
+        float halfWidth;
+        float halfHeight;
+
+        if (appliance instanceof LightSource) {
+            halfWidth = (lightSourceSize * scale / 2);
+            halfHeight = (lightSourceSize * scale / 2);
+        } else if (appliance instanceof Machine) {
+            halfWidth = (machineSize * scale / 2);
+            halfHeight = (machineSize * scale / 2);
+        } else if (appliance instanceof Sensor){
+            halfWidth = (sensorSize * scale / 2);
+            halfHeight = (sensorSize * scale / 2);
+        }
+        else
+        {
+            halfWidth = (machineSize * scale / 2);
+            halfHeight = (machineSize * scale / 2);
+        }
+
+        Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
+        Point rightTop = transformPoint(x + halfWidth, y - halfHeight);
+        return new Rect(leftTop.x, leftTop.y, rightTop.x, rightTop.y);
     }
 
     private void drawAppliance(Canvas canvas, Room room, Appliance appliance) {
@@ -106,34 +216,42 @@ public class DrawApartment extends View {
 
         Resources res = getResources();
 
-        int x = (int) (appliance.getRelativeX() * scale);
-        int y = (int) (appliance.getRelativeY() * scale);
-        int halfWidth = (int) (appliance.getWidth() * scale / 2);
-        int halfHeight = (int) (appliance.getHeight() * scale / 2);
-
-        Point leftTop = transformPoint(canvas, x - halfWidth, y - halfHeight);
+        Rect boundingBox = getApplianceBoundingBox(room, appliance);
 
         if (appliance instanceof LightSource) {
-            Bitmap bitmapLight = BitmapFactory.decodeResource(res, R.drawable.light);
-            canvas.drawBitmap(resizedBitmap(bitmapLight), leftTop.x, leftTop.y, new Paint());
-
             LightSource lightSource = (LightSource) appliance;
             if (lightSource.isOn()) {
                 Bitmap bitmapLightOn = BitmapFactory.decodeResource(res, R.drawable.lighton);
-                canvas.drawBitmap(resizedBitmap(bitmapLightOn), leftTop.x, leftTop.y, new Paint());
+                canvas.drawBitmap(resizedBitmap(bitmapLightOn, lightSourceSize), boundingBox.left, boundingBox.top, new Paint());
             } else {
                 Bitmap bitmapLightOff = BitmapFactory.decodeResource(res, R.drawable.lightoff);
-                canvas.drawBitmap(resizedBitmap(bitmapLightOff), leftTop.x, leftTop.y, new Paint());
+                canvas.drawBitmap(resizedBitmap(bitmapLightOff, lightSourceSize), boundingBox.left, boundingBox.top, new Paint());
             }
         } else if (appliance instanceof WashingMachine) {
+
             Bitmap bitmapWashingMachine = BitmapFactory.decodeResource(res, R.drawable.washingmachine);
-            canvas.drawBitmap(resizedBitmap(bitmapWashingMachine), leftTop.x, leftTop.y, new Paint());
+            canvas.drawBitmap(resizedBitmap(bitmapWashingMachine, machineSize), boundingBox.left, boundingBox.top, new Paint());
+
         } else if (appliance instanceof TemperatureSensor) {
             Bitmap bitmapTemperatureSensor = BitmapFactory.decodeResource(res, R.drawable.temp1);
-            canvas.drawBitmap(resizedBitmap(bitmapTemperatureSensor), leftTop.x, leftTop.y, new Paint());
+            Bitmap resizedSensorBitmap = resizedBitmap(bitmapTemperatureSensor, sensorSize);
+            canvas.drawBitmap(resizedSensorBitmap, boundingBox.left, boundingBox.top, new Paint());
             TemperatureSensor temperatureSensor = (TemperatureSensor) appliance;
             float temperature = temperatureSensor.getValue();
-            // Draw temperature
+
+            float labelX = appliance.getRelativeX() + room.getRelativeX();
+            float labelY = appliance.getRelativeY() + room.getRelativeY();
+
+            Point temperatureLabelPosition = transformPoint(labelX * scale, labelY * scale);
+            int yShifted = temperatureLabelPosition.y + resizedSensorBitmap.getHeight() + 10;
+            Paint temperaturePaint = new Paint();
+            float fontSize = textSize * scale;
+            temperaturePaint.setTextSize(fontSize);
+
+            String temperatureText = String.format(Locale.US, "%2.1f C", temperature);
+            int xCentered = alightTextX(temperatureLabelPosition.x, fontSize, temperatureText.length());
+            //int xCentered = temperatureLabelPosition.x;
+            canvas.drawText(temperatureText, xCentered, yShifted, temperaturePaint);
         }
     }
 }
