@@ -65,14 +65,7 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
                 drawApartment.setDeviceTreeService(deviceTreeService);
 
-                Handler handler=new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceTreeService.requestDeviceTreeUpdate();
-                        handler.postDelayed(this,DeviceTreeRefreshRateMs);
-                    }
-                },DeviceTreeRefreshRateMs);
+                startForegroundSynchronizationLoop();
             }
             if(service instanceof LocationService.LocalBinder)
             {
@@ -82,14 +75,7 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
 
                 drawApartment.setLocationService(locationService);
 
-                Handler handler=new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        locationService.requestLocationInfo();
-                        handler.postDelayed(this,LocationRefreshRateMs);
-                    }
-                },LocationRefreshRateMs);
+                startForegroundLocationTrackingLoop();
             }
         }
 
@@ -100,6 +86,30 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
             locationService = null;
         }
     };
+
+    private void startForegroundSynchronizationLoop()
+    {
+        Handler handler=new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                deviceTreeService.requestDeviceTreeUpdate();
+                handler.postDelayed(this,DeviceTreeRefreshRateMs);
+            }
+        }, DeviceTreeRefreshRateMs);
+    }
+
+    private void startForegroundLocationTrackingLoop()
+    {
+        Handler handler=new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                locationService.requestLocationInfo();
+                handler.postDelayed(this,LocationRefreshRateMs);
+            }
+        },LocationRefreshRateMs);
+    }
 
 
     @Override
