@@ -8,8 +8,10 @@ import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
 
+import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -71,11 +73,18 @@ public class DeviceTreeService extends Service {
 
     private void onDiscoveryReceivedCallback(Discovery discovery)
     {
-        PeriodicWorkRequest periodic = new PeriodicWorkRequest
-                .Builder(SynchronisationWorker.class, 15, TimeUnit.MINUTES).build();
+        Constraints.Builder constraintsBuilder = new Constraints.Builder();
+        constraintsBuilder.setRequiresBatteryNotLow(true);
+        constraintsBuilder.setRequiredNetworkType(NetworkType.CONNECTED);
+        Constraints constraints = constraintsBuilder.build();
+
+        PeriodicWorkRequest.Builder periodicBuilder = new PeriodicWorkRequest
+                .Builder(SynchronisationWorker.class, 15, TimeUnit.MINUTES);
+        periodicBuilder.setConstraints(constraints);
+
         WorkManager
                 .getInstance(getApplicationContext())
-                .enqueueUniquePeriodicWork(SynchronisationWorker.PeriodicWorkName, ExistingPeriodicWorkPolicy.REPLACE, periodic);
+                .enqueueUniquePeriodicWork(SynchronisationWorker.PeriodicWorkName, ExistingPeriodicWorkPolicy.REPLACE, periodicBuilder.build());
     }
 
     private void requestSynchronization()

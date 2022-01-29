@@ -44,7 +44,7 @@ public class DiscoveryWorker extends ListenableWorker {
         public DiscoveryFuture(Context context)
         {
             this.context = context;
-            client.discoverServer(this::SendDiscoveryInfo);
+            client.discoverServer(this::SendDiscoveryInfo, getApplicationContext());
         }
 
         private void SendDiscoveryInfo(Discovery discovery)

@@ -70,7 +70,7 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         private void simulationLoop(float deltaTime) {
             for(SimulatedLightSource lightSource : simulatedLights)
             {
-                lightSource.setIsOn(random.nextBoolean());
+                //lightSource.setIsOn(random.nextBoolean());
             }
             for(SimulatedWashingMachine washingMachine : simulatedWashingMachines)
             {

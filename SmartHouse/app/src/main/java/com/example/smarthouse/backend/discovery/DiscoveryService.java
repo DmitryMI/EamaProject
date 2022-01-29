@@ -8,8 +8,10 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -74,9 +76,15 @@ public class DiscoveryService extends Service implements DiscoveryBroadcastRecei
 
         //OneTimeWorkRequest discoveryNowRequest = OneTimeWorkRequest.from(DiscoveryWorker.class);
         //workManager.enqueue(discoveryNowRequest);
-        PeriodicWorkRequest discoveryPeriodicRequest = new PeriodicWorkRequest.Builder(DiscoveryWorker.class, 15, TimeUnit.MINUTES).build();
+        Constraints.Builder constraintsBuilder = new Constraints.Builder();
+        constraintsBuilder.setRequiresBatteryNotLow(true);
+        constraintsBuilder.setRequiredNetworkType(NetworkType.CONNECTED);
+        Constraints constraints = constraintsBuilder.build();
 
-        workManager.enqueueUniquePeriodicWork(DiscoveryWorker.PeriodicWorkName, ExistingPeriodicWorkPolicy.REPLACE, discoveryPeriodicRequest);
+        PeriodicWorkRequest.Builder discoveryPeriodicRequestBuilder = new PeriodicWorkRequest.Builder(DiscoveryWorker.class, 15, TimeUnit.MINUTES);
+        discoveryPeriodicRequestBuilder.setConstraints(constraints);
+
+        workManager.enqueueUniquePeriodicWork(DiscoveryWorker.PeriodicWorkName, ExistingPeriodicWorkPolicy.REPLACE, discoveryPeriodicRequestBuilder.build());
         areWorkersInitialized = true;
     }
 

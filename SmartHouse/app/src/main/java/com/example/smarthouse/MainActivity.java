@@ -46,7 +46,10 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
     private LocationUpdatedBroadcastReceiver locationUpdatedBroadcastReceiver;
 
+    private Apartment apartment;
     private DrawApartment drawApartment;
+    private LocationInfo previousLocation;
+    private LocationInfo currentLocation;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -193,8 +196,20 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         {
             return;
         }
-        Apartment apartment = deviceTreeService.getDeviceTree();
+        apartment = deviceTreeService.getDeviceTree();
         drawApartment.setApartment(apartment);
+    }
+
+    private void setAllLights(Room room, boolean isOn)
+    {
+        for(Appliance appliance : room.getAppliances())
+        {
+            if(appliance instanceof LightSource)
+            {
+                LightSource lightSource = (LightSource) appliance;
+                lightSource.setIsOn(isOn);
+            }
+        }
     }
 
     @Override
@@ -203,14 +218,33 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         {
             return;
         }
+        if(apartment == null)
+        {
+            return;
+        }
         LocationInfo locationInfo = locationService.getLocation();
         if(locationInfo.isValid()) {
-
+            if(previousLocation != null && previousLocation.isValid() && previousLocation.getRoomId() != locationInfo.getRoomId())
+            {
+                Room previousRoom = apartment.getRooms()[previousLocation.getRoomId()];
+                setAllLights(previousRoom, false);
+            }
+            Room currentRoom = apartment.getRooms()[locationInfo.getRoomId()];
+            setAllLights(currentRoom, true);
+            deviceTreeService.sendDeviceTree(apartment);
+            drawApartment.setApartment(apartment);
         }
         else
         {
-
+            /*
+            Room previousRoom = apartment.getRooms()[previousLocation.getRoomId()];
+            setAllLights(previousRoom, false);
+            deviceTreeService.sendDeviceTree(apartment);
+            drawApartment.setApartment(apartment);
+            */
         }
+        previousLocation = currentLocation;
+        currentLocation = locationInfo;
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

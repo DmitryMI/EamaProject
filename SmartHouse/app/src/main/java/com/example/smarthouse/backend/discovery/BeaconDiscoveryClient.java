@@ -241,7 +241,7 @@ public class BeaconDiscoveryClient implements DiscoveryClient{
         isCanceled = true;
     }
 
-    public void discoverServer(DiscoveryCallback callback)
+    public void discoverServer(DiscoveryCallback callback, Context context)
     {
         this.callback = callback;
         if(isStarted && !isDone)
