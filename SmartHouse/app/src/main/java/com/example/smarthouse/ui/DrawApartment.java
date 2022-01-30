@@ -301,7 +301,7 @@ public class DrawApartment extends View {
         {
             for(Appliance appliance : room.getAppliances())
             {
-                Rect boundingBox = getApplianceBoundingBox(room, appliance);
+                Rect boundingBox = getApplianceBoundingBox(room, appliance, null);
                 if(boundingBox.contains((int)x, (int)y))
                 {
                     onClick(x, y, boundingBox, room, appliance);
@@ -515,28 +515,32 @@ public class DrawApartment extends View {
         return new Rect(leftTop.x, leftTop.y, rightTop.x, rightTop.y);
     }
 
-    private Rect getApplianceBoundingBox(Room room, Appliance appliance)
+    private Rect getApplianceBoundingBox(Room room, Appliance appliance, Bitmap bitmap)
     {
         float relativeX = appliance.getRelativeX() + room.getRelativeX();
         float relativeY = appliance.getRelativeY() + room.getRelativeY();
 
         float halfWidth;
         float halfHeight;
+        float ratio = 1;
+        if(bitmap != null) {
+            ratio = (float) bitmap.getWidth() / bitmap.getHeight();
+        }
 
         if (appliance instanceof LightSource) {
             halfWidth = (lightSourceSize / 2);
-            halfHeight = (lightSourceSize / 2);
+            halfHeight = (lightSourceSize / 2) / ratio;
         } else if (appliance instanceof Machine) {
             halfWidth = (machineSize / 2);
-            halfHeight = (machineSize / 2);
+            halfHeight = (machineSize / 2) / ratio;
         } else if (appliance instanceof Sensor){
             halfWidth = (sensorSize / 2);
-            halfHeight = (sensorSize / 2);
+            halfHeight = (sensorSize / 2) / ratio;
         }
         else
         {
             halfWidth = (machineSize / 2);
-            halfHeight = (machineSize / 2);
+            halfHeight = (machineSize / 2) / ratio;
         }
 
         Point leftTop = transformPoint((relativeX) - halfWidth, (relativeY) + halfHeight);
@@ -547,21 +551,22 @@ public class DrawApartment extends View {
     private void drawAppliance(Canvas canvas, Room room, Appliance appliance) {
         float scale = getCompositeScale();
 
-        Rect boundingBox = getApplianceBoundingBox(room, appliance);
-
         if (appliance instanceof LightSource) {
             LightSource lightSource = (LightSource) appliance;
             if (lightSource.isOn()) {
-                canvas.drawBitmap(resizedBitmap(bitmapLightOn, lightSourceSize), boundingBox.left, boundingBox.top, new Paint());
+                Rect boundingBox = getApplianceBoundingBox(room, appliance, bitmapLightOn);
+                canvas.drawBitmap(bitmapLightOn, null, boundingBox, new Paint());
             } else {
-                canvas.drawBitmap(resizedBitmap(bitmapLightOff, lightSourceSize), boundingBox.left, boundingBox.top, new Paint());
+                Rect boundingBox = getApplianceBoundingBox(room, appliance, bitmapLightOff);
+                canvas.drawBitmap(bitmapLightOff, null, boundingBox, new Paint());
             }
         } else if (appliance instanceof WashingMachine) {
-            canvas.drawBitmap(resizedBitmap(bitmapWashingMachine, machineSize), boundingBox.left, boundingBox.top, new Paint());
-
+            Rect boundingBox = getApplianceBoundingBox(room, appliance, bitmapWashingMachine);
+            Log.i("SIZE", String.format("%d, %d", boundingBox.width(), boundingBox.height()));
+            canvas.drawBitmap(bitmapWashingMachine, null, boundingBox, new Paint());
         } else if (appliance instanceof TemperatureSensor) {
-            Bitmap resizedSensorBitmap = resizedBitmap(bitmapTemperatureSensor, sensorSize);
-            canvas.drawBitmap(resizedSensorBitmap, boundingBox.left, boundingBox.top, new Paint());
+            Rect boundingBox = getApplianceBoundingBox(room, appliance, bitmapTemperatureSensor);
+            canvas.drawBitmap(bitmapTemperatureSensor, null, boundingBox, new Paint());
             TemperatureSensor temperatureSensor = (TemperatureSensor) appliance;
             float temperature = temperatureSensor.getValue();
 
