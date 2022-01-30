@@ -345,6 +345,7 @@ public class DrawApartment extends View {
 
     public void setActiveRoomIndex(int roomIndex)
     {
+        stopViewportAnimation();
         if(activeRoomIndex == roomIndex)
         {
             return;
@@ -558,7 +559,6 @@ public class DrawApartment extends View {
             }
         } else if (appliance instanceof WashingMachine) {
             Rect boundingBox = getApplianceBoundingBox(room, appliance, bitmapWashingMachine);
-            Log.i("SIZE", String.format("%d, %d", boundingBox.width(), boundingBox.height()));
             canvas.drawBitmap(bitmapWashingMachine, null, boundingBox, new Paint());
         } else if (appliance instanceof TemperatureSensor) {
             Rect boundingBox = getApplianceBoundingBox(room, appliance, bitmapTemperatureSensor);
