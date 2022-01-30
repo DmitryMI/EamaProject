@@ -232,9 +232,12 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
         {
             return;
         }
+
+        previousLocation = currentLocation;
+
         LocationInfo locationInfo = locationService.getLocation();
         if(locationInfo.isValid()) {
-            if(previousLocation != null && previousLocation.isValid() && previousLocation.getRoomId() != locationInfo.getRoomId())
+            if(previousLocation != null && previousLocation.isValid() && (previousLocation.getRoomId() != locationInfo.getRoomId()))
             {
                 Room previousRoom = apartment.getRooms()[previousLocation.getRoomId()];
                 setAllLights(previousRoom, false);
@@ -255,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements DeviceTreeBroadca
             */
             drawApartment.setActiveRoomIndex(-1);
         }
-        previousLocation = currentLocation;
+
         currentLocation = locationInfo;
     }
 
