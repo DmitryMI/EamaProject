@@ -37,20 +37,46 @@ public class DrawApartment extends View {
     private static final int margin = 100;
     private static final int clickEventMaxDelta = 200;
 
+    private Bitmap bitmapLightOn;
+    private Bitmap bitmapLightOff;
+    private Bitmap bitmapWashingMachine;
+    private Bitmap bitmapTemperatureSensor;
+
     private static final float scaleDefault = 80.0f;
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
     private float autoScale;
 
+    private boolean viewportInitialized = false;
+    private float viewportCenterX;
+    private float viewportCenterY;
+    private float viewportScale = 1.0f;
+
     private float touchStartX;
     private float touchStartY;
+    private float touchSize;
+    private float moveCenterX;
+    private float moveCenterY;
 
-    public DrawApartment(Context context) {
+    public DrawApartment(Context context)
+    {
         super(context);
     }
     public DrawApartment(Context context, android.util.AttributeSet attributeSet)
     {
         super(context, attributeSet);
+
+        setupResources();
+    }
+
+    private void setupResources()
+    {
+        Resources res = getResources();
+        bitmapLightOn = BitmapFactory.decodeResource(res, R.drawable.lighton);
+        bitmapLightOff = BitmapFactory.decodeResource(res, R.drawable.lightoff);
+        bitmapWashingMachine = BitmapFactory.decodeResource(res, R.drawable.washingmachine);
+        bitmapTemperatureSensor = BitmapFactory.decodeResource(res, R.drawable.temp1);
+
     }
 
     public void setApartment(Apartment apartment) {
@@ -61,6 +87,13 @@ public class DrawApartment extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if(!viewportInitialized)
+        {
+            viewportCenterX = getWidth() / 2.0f;
+            viewportCenterY = getHeight() / 2.0f;
+            viewportInitialized = true;
+        }
 
         if (apartment == null) {
             return;
@@ -92,10 +125,51 @@ public class DrawApartment extends View {
         switch(action) {
 
             case (MotionEvent.ACTION_DOWN) :
-                touchStartX = motionEvent.getX();
-                touchStartY = motionEvent.getY();
+                if(motionEvent.getPointerCount() == 1) {
+                    touchStartX = motionEvent.getX();
+                    touchStartY = motionEvent.getY();
+                }
                 return true;
             case (MotionEvent.ACTION_MOVE) :
+                if(!viewportInitialized)
+                {
+                    return true;
+                }
+                if(motionEvent.getPointerCount() == 2) {
+                    float x0 = motionEvent.getX(0);
+                    float y0 = motionEvent.getY(0);
+                    float x1 = motionEvent.getX(1);
+                    float y1 = motionEvent.getY(1);
+                    float dx = x1 - x0;
+                    float dy = y1 - y0;
+                    float distance = (float)Math.sqrt(dx * dx + dy * dy);
+                    float centerX = (x1 + x0) / 2;
+                    float centerY = (y1 + y0) / 2;
+                    float shiftX = centerX - moveCenterX;
+                    float shiftY = centerY - moveCenterY;
+
+                    if(touchSize == 0)
+                    {
+                        touchSize = distance;
+                    }
+                    else
+                    {
+                        float scaleChange = distance / touchSize;
+                        viewportScale *= scaleChange;
+                    }
+
+                    if(moveCenterX != 0 && moveCenterY != 0)
+                    {
+                        viewportCenterX += shiftX;
+                        viewportCenterY += shiftY;
+                    }
+
+                    moveCenterX = centerX;
+                    moveCenterY = centerY;
+                    touchSize = distance;
+
+                    invalidate();
+                }
                 return true;
             case (MotionEvent.ACTION_UP) :
                 float touchStopX = motionEvent.getX();
@@ -105,6 +179,11 @@ public class DrawApartment extends View {
                     onClick(touchStopX, touchStopY);
                     performClick();
                 }
+
+                touchSize = 0;
+                moveCenterX = 0;
+                moveCenterY = 0;
+
                 return true;
             case (MotionEvent.ACTION_CANCEL) :
                 return true;
@@ -215,10 +294,13 @@ public class DrawApartment extends View {
         float xScale = drawingRegionWidth / apartmentWidth;
         float yScale = drawingRegionHeight / apartmentHeight;
         autoScale = Math.min(xScale, yScale);
+
+        //viewportCenterX = getWidth() / 2.0f;
+        //viewportCenterY = getHeight() / 2.0f;
     }
 
     private float getAutoScale() {
-        return autoScale;
+        return autoScale * viewportScale;
     }
 
     private int alightTextX(float originalPositionX, float textSize, int textLength)
@@ -233,7 +315,10 @@ public class DrawApartment extends View {
         int canvasHalfWidth = canvasWidth / 2;
         int canvasHalfHeight = canvasHeight / 2;
 
-        return new Point((int) (x + canvasHalfWidth), (int) (canvasHalfHeight - y));
+        int transformedX = (int) (x + viewportCenterX);
+        int transformedY = (int) (viewportCenterY - y);
+
+        return new Point(transformedX, transformedY);
     }
 
     private void drawRoom(Canvas canvas, Room room) {
@@ -249,7 +334,7 @@ public class DrawApartment extends View {
 
         Paint roomBordersPaint = new Paint();
         roomBordersPaint.setStyle(Paint.Style.STROKE);
-        roomBordersPaint.setStrokeWidth(8);
+        roomBordersPaint.setStrokeWidth(0.05f * scale);
 
         canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, roomBordersPaint);
 
@@ -312,26 +397,19 @@ public class DrawApartment extends View {
     private void drawAppliance(Canvas canvas, Room room, Appliance appliance) {
         float scale = getAutoScale();
 
-        Resources res = getResources();
-
         Rect boundingBox = getApplianceBoundingBox(room, appliance);
 
         if (appliance instanceof LightSource) {
             LightSource lightSource = (LightSource) appliance;
             if (lightSource.isOn()) {
-                Bitmap bitmapLightOn = BitmapFactory.decodeResource(res, R.drawable.lighton);
                 canvas.drawBitmap(resizedBitmap(bitmapLightOn, lightSourceSize), boundingBox.left, boundingBox.top, new Paint());
             } else {
-                Bitmap bitmapLightOff = BitmapFactory.decodeResource(res, R.drawable.lightoff);
                 canvas.drawBitmap(resizedBitmap(bitmapLightOff, lightSourceSize), boundingBox.left, boundingBox.top, new Paint());
             }
         } else if (appliance instanceof WashingMachine) {
-
-            Bitmap bitmapWashingMachine = BitmapFactory.decodeResource(res, R.drawable.washingmachine);
             canvas.drawBitmap(resizedBitmap(bitmapWashingMachine, machineSize), boundingBox.left, boundingBox.top, new Paint());
 
         } else if (appliance instanceof TemperatureSensor) {
-            Bitmap bitmapTemperatureSensor = BitmapFactory.decodeResource(res, R.drawable.temp1);
             Bitmap resizedSensorBitmap = resizedBitmap(bitmapTemperatureSensor, sensorSize);
             canvas.drawBitmap(resizedSensorBitmap, boundingBox.left, boundingBox.top, new Paint());
             TemperatureSensor temperatureSensor = (TemperatureSensor) appliance;
@@ -341,7 +419,7 @@ public class DrawApartment extends View {
             float labelY = appliance.getRelativeY() + room.getRelativeY();
 
             Point temperatureLabelPosition = transformPoint(labelX * scale, labelY * scale);
-            int yShifted = temperatureLabelPosition.y + resizedSensorBitmap.getHeight() + 10;
+            int yShifted = temperatureLabelPosition.y + boundingBox.height() + 10;
             Paint temperaturePaint = new Paint();
             float fontSize = textSize * scale;
             temperaturePaint.setTextSize(fontSize);
