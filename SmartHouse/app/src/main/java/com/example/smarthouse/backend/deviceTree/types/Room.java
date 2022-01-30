@@ -52,4 +52,7 @@ public class Room implements JsonReadable {
         return appliances;
     }
 
+    public int getId() {
+        return id;
+    }
 }

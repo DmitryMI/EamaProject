@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -45,6 +46,7 @@ public class DrawApartment extends View {
     private static final float scaleDefault = 80.0f;
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
+    private int activeRoomIndex = -1;
     private float autoScale;
 
     private boolean viewportInitialized = false;
@@ -249,6 +251,12 @@ public class DrawApartment extends View {
         return super.performClick();
     }
 
+    public void setActiveRoomIndex(int roomIndex)
+    {
+        activeRoomIndex = roomIndex;
+        invalidate();
+    }
+
     private void setAutoScale()
     {
         if(apartment == null)
@@ -338,6 +346,14 @@ public class DrawApartment extends View {
         roomBordersPaint.setStrokeWidth(0.05f * scale);
 
         canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, roomBordersPaint);
+
+        if(room.getId() == activeRoomIndex)
+        {
+            Paint activeRoomPaint = new Paint();
+            activeRoomPaint.setColor(Color.GREEN);
+            activeRoomPaint.setAlpha(50);
+            canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, activeRoomPaint);
+        }
 
         Paint roomNamePaint = new Paint();
         float fontSize = textSize * scale;
