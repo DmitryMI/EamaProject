@@ -72,7 +72,7 @@ public class DrawApartment extends View {
         public float centerX;
         public float centerY;
         public float scale;
-        public boolean isInitialized = false;
+        public boolean isInitialized;
 
         public ViewportData(float x, float y, float scale, boolean isInitialized)
         {
