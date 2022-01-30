@@ -268,20 +268,29 @@ public class DrawApartment extends View {
     {
         activeRoomIndex = roomIndex;
         if(apartment != null) {
-            Rect boundingBox = getRoomBoundingBox(apartment.getRooms()[roomIndex]);
-            viewportData = getViewportForBox(boundingBox);
+            Room room = apartment.getRooms()[roomIndex];
+            viewportData = getViewportForRoom(room);
         }
         invalidate();
     }
 
-    private ViewportData getViewportForBox(Rect boundingBox)
+    private ViewportData getViewportForRoom(Room room)
     {
-        float centerX = boundingBox.centerX();
-        float centerY = boundingBox.centerY();
-        float xScale = (float)getWidth() / boundingBox.width();
-        float yScale = (float)getHeight() / boundingBox.height();
-        float scale = Math.min(xScale, yScale);
-        return new ViewportData(centerX, centerY, 1, true);
+        float centerX = getWidth() / 2.0f - room.getRelativeX() * autoScale;
+        float centerY = getHeight() / 2.0f + room.getRelativeY() * autoScale;
+        float xScale = (float)getWidth() / room.getWidth();
+        float yScale = (float)getHeight() / room.getHeight();
+        float scale = Math.min(xScale, yScale) / autoScale;
+
+        centerX -= getWidth() / 2.0f;
+        centerX *= scale;
+        centerX += getWidth() / 2.0f;
+
+        centerY -= getHeight() / 2.0f;
+        centerY *= scale;
+        centerY += getHeight() / 2.0f;
+
+        return new ViewportData(centerX, centerY, scale, true);
     }
 
     private void setAutoScale()
