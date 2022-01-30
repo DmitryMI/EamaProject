@@ -37,8 +37,10 @@ public class DrawApartment extends View {
     private static final float sensorSize = 0.7f;
     private static final float machineSize = 1.3f;
     private static final float textSize = 0.3f;
+    private static final float roomBordersSize = 0.05f;
     private static final int margin = 100;
     private static final int clickEventMaxDelta = 200;
+    private static final int activeRoomHighlightingAlpha = 50;
     private static final float viewportAnimationSpeed = 0.05f;
 
     private Bitmap bitmapLightOn;
@@ -55,7 +57,7 @@ public class DrawApartment extends View {
     private final Handler animationHandler = new Handler();
     private AnimationRunnable animationRunnable;
     private boolean isAnimationRunning = false;
-    private ArrayList<ViewportData> viewportAnimationSequence = new ArrayList<>();
+    private final ArrayList<ViewportData> viewportAnimationSequence = new ArrayList<>();
 
     private ViewportData viewportData = new ViewportData(0, 0, 1, false);
 
@@ -459,16 +461,11 @@ public class DrawApartment extends View {
 
         float x = (room.getRelativeX());
         float y = (room.getRelativeY());
-        float halfWidth = (room.getWidth() / 2);
-        float halfHeight = (room.getHeight() / 2);
-
-        //Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
-        //Point rightBottom = transformPoint(x + halfWidth, y - halfHeight);
         Rect roomBox = getRoomBoundingBox(room);
 
         Paint roomBordersPaint = new Paint();
         roomBordersPaint.setStyle(Paint.Style.STROKE);
-        roomBordersPaint.setStrokeWidth(0.05f * scale);
+        roomBordersPaint.setStrokeWidth(roomBordersSize * scale);
 
         canvas.drawRect(roomBox.left, roomBox.top, roomBox.right, roomBox.bottom, roomBordersPaint);
 
@@ -476,7 +473,7 @@ public class DrawApartment extends View {
         {
             Paint activeRoomPaint = new Paint();
             activeRoomPaint.setColor(Color.GREEN);
-            activeRoomPaint.setAlpha(50);
+            activeRoomPaint.setAlpha(activeRoomHighlightingAlpha);
             canvas.drawRect(roomBox.left, roomBox.top, roomBox.right, roomBox.bottom, activeRoomPaint);
         }
 
@@ -487,7 +484,6 @@ public class DrawApartment extends View {
         Point roomNamePosition = transformPoint(x, y);
 
         String roomName = room.getName();
-        //int xCentered = (int)(roomNamePosition.x - roomName.length() / 2 * fontSize * 0.5);
         int xCentered = alightTextX(roomNamePosition.x, fontSize, roomName.length());
         int yOffsetted = (int)(roomNamePosition.y - 0.5 * scale);
         canvas.drawText(roomName, xCentered, yOffsetted, roomNamePaint);
