@@ -430,7 +430,7 @@ public class DrawApartment extends View {
             float labelX = appliance.getRelativeX() + room.getRelativeX();
             float labelY = appliance.getRelativeY() + room.getRelativeY();
 
-            Point temperatureLabelPosition = transformPoint(labelX * scale, labelY * scale);
+            Point temperatureLabelPosition = transformPoint(labelX, labelY);
             int yShifted = temperatureLabelPosition.y + boundingBox.height() + 10;
             Paint temperaturePaint = new Paint();
             float fontSize = textSize * scale;
