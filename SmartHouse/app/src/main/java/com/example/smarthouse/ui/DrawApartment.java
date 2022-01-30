@@ -355,7 +355,7 @@ public class DrawApartment extends View {
             Room room = apartment.getRooms()[roomIndex];
             ViewportData nextViewport = getViewportForRoom(room);
             viewportAnimationSequence.add(viewportData);
-            viewportAnimationSequence.add(new ViewportData(getWidth() / 2.0f, getHeight() / 2.0f, 1, true));
+            //viewportAnimationSequence.add(new ViewportData(getWidth() / 2.0f, getHeight() / 2.0f, 1, true));
             viewportAnimationSequence.add(nextViewport);
             animateViewport();
         }
