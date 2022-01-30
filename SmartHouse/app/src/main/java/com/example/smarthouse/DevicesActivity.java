@@ -10,13 +10,32 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DevicesActivity extends AppCompatActivity {
+
+
+    RecyclerView recyclerView;
+    List<String> machineArray = new ArrayList<>();
+
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
+
+        recyclerView = findViewById(R.id.recyclerView);
+
+        machineArray.add("Washing machine");
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, machineArray);
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -38,9 +57,12 @@ public class DevicesActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+
+    public void startWashingbutton(View view) {
         ImageButton startWashingButton = findViewById(R.id.startWashingbutton);
-
-
         startWashingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,11 +71,7 @@ public class DevicesActivity extends AppCompatActivity {
 
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        Toast.makeText(
-                                DevicesActivity.this,
-                                "You Clicked : " + item.getTitle(),
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        Toast.makeText(DevicesActivity.this, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
@@ -61,10 +79,11 @@ public class DevicesActivity extends AppCompatActivity {
                 popup.show();
             }
         });
-
     }
 
     public void stopWashingButton(View view) {
-        Toast.makeText(this, "You Clicked : Pause" , Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "You Clicked : Pause", Toast.LENGTH_SHORT).show();
     }
+
+
 }

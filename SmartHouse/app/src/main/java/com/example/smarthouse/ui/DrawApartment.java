@@ -65,28 +65,24 @@ public class DrawApartment extends View {
     private float moveCenterX;
     private float moveCenterY;
 
-    private static class ViewportData
-    {
+    private static class ViewportData {
         public float centerX;
         public float centerY;
         public float scale;
         public boolean isInitialized = false;
 
-        public ViewportData(float x, float y, float scale, boolean isInitialized)
-        {
+        public ViewportData(float x, float y, float scale, boolean isInitialized) {
             centerX = x;
             centerY = y;
             this.scale = scale;
             this.isInitialized = isInitialized;
         }
 
-        private static float lerp(float from, float to, float alpha)
-        {
+        private static float lerp(float from, float to, float alpha) {
             return (to - from) * alpha + from;
         }
 
-        public static ViewportData lerp(ViewportData from, ViewportData to, float alpha)
-        {
+        public static ViewportData lerp(ViewportData from, ViewportData to, float alpha) {
             float centerX = lerp(from.centerX, to.centerX, alpha);
             float centerY = lerp(from.centerY, to.centerY, alpha);
             float scale = lerp(from.scale, to.scale, alpha);
@@ -94,8 +90,7 @@ public class DrawApartment extends View {
         }
     }
 
-    private class AnimationRunnable implements Runnable
-    {
+    private class AnimationRunnable implements Runnable {
         int animationSequenceIndex = 1;
         float lerpAlpha = 0;
 
@@ -106,30 +101,24 @@ public class DrawApartment extends View {
             viewportData = ViewportData.lerp(previousViewport, nextViewport, lerpAlpha);
             invalidate();
             lerpAlpha += viewportAnimationSpeed;
-            if(lerpAlpha >= 1.0f)
-            {
+            if (lerpAlpha >= 1.0f) {
                 viewportData = ViewportData.lerp(previousViewport, nextViewport, 1.0f);
                 animationSequenceIndex++;
                 lerpAlpha = 0;
             }
 
-            if(animationSequenceIndex == viewportAnimationSequence.size())
-            {
+            if (animationSequenceIndex == viewportAnimationSequence.size()) {
                 animationSequenceIndex = 1;
                 viewportAnimationSequence.clear();
                 isAnimationRunning = false;
-            }
-            else
-            {
+            } else {
                 animationHandler.postDelayed(this, 10);
             }
         }
     }
 
-    private void animateViewport()
-    {
-        if(isAnimationRunning)
-        {
+    private void animateViewport() {
+        if (isAnimationRunning) {
             animationHandler.removeCallbacks(animationRunnable);
         }
         isAnimationRunning = true;
@@ -137,10 +126,8 @@ public class DrawApartment extends View {
         animationHandler.post(animationRunnable);
     }
 
-    private void stopViewportAnimation()
-    {
-        if(!isAnimationRunning)
-        {
+    private void stopViewportAnimation() {
+        if (!isAnimationRunning) {
             return;
         }
         animationHandler.removeCallbacks(animationRunnable);
@@ -148,20 +135,17 @@ public class DrawApartment extends View {
         animationRunnable = null;
     }
 
-    public DrawApartment(Context context)
-    {
+    public DrawApartment(Context context) {
         super(context);
     }
 
-    public DrawApartment(Context context, android.util.AttributeSet attributeSet)
-    {
+    public DrawApartment(Context context, android.util.AttributeSet attributeSet) {
         super(context, attributeSet);
 
         setupResources();
     }
 
-    private void setupResources()
-    {
+    private void setupResources() {
         Resources res = getResources();
         bitmapLightOn = BitmapFactory.decodeResource(res, R.drawable.lighton);
         bitmapLightOff = BitmapFactory.decodeResource(res, R.drawable.lightoff);
@@ -179,8 +163,7 @@ public class DrawApartment extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if(!viewportData.isInitialized)
-        {
+        if (!viewportData.isInitialized) {
             viewportData.centerX = getWidth() / 2.0f;
             viewportData.centerY = getHeight() / 2.0f;
             viewportData.isInitialized = true;
@@ -202,10 +185,8 @@ public class DrawApartment extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent motionEvent)
-    {
-        if(deviceTreeService == null)
-        {
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        if (deviceTreeService == null) {
             return true;
         }
 
@@ -213,38 +194,34 @@ public class DrawApartment extends View {
 
         //Log.i("SmartHouse DrawApartment", motionEvent.toString());
 
-        switch(action) {
+        switch (action) {
 
-            case (MotionEvent.ACTION_DOWN) :
-                if(motionEvent.getPointerCount() == 1) {
+            case (MotionEvent.ACTION_DOWN):
+                if (motionEvent.getPointerCount() == 1) {
                     touchStartX = motionEvent.getX();
                     touchStartY = motionEvent.getY();
                 }
                 return true;
-            case (MotionEvent.ACTION_MOVE) :
-                if(!viewportData.isInitialized)
-                {
+            case (MotionEvent.ACTION_MOVE):
+                if (!viewportData.isInitialized) {
                     return true;
                 }
-                if(motionEvent.getPointerCount() == 2) {
+                if (motionEvent.getPointerCount() == 2) {
                     float x0 = motionEvent.getX(0);
                     float y0 = motionEvent.getY(0);
                     float x1 = motionEvent.getX(1);
                     float y1 = motionEvent.getY(1);
                     float dx = x1 - x0;
                     float dy = y1 - y0;
-                    float distance = (float)Math.sqrt(dx * dx + dy * dy);
+                    float distance = (float) Math.sqrt(dx * dx + dy * dy);
                     float centerX = (x1 + x0) / 2;
                     float centerY = (y1 + y0) / 2;
                     float shiftX = centerX - moveCenterX;
                     float shiftY = centerY - moveCenterY;
 
-                    if(touchSize == 0)
-                    {
+                    if (touchSize == 0) {
                         touchSize = distance;
-                    }
-                    else
-                    {
+                    } else {
                         float scaleChange = distance / touchSize;
                         viewportData.scale *= scaleChange;
 
@@ -257,8 +234,7 @@ public class DrawApartment extends View {
                         viewportData.centerY += getHeight() / 2.0f;
                     }
 
-                    if(moveCenterX != 0 && moveCenterY != 0)
-                    {
+                    if (moveCenterX != 0 && moveCenterY != 0) {
                         viewportData.centerX += shiftX;
                         viewportData.centerY += shiftY;
                         stopViewportAnimation();
@@ -271,11 +247,10 @@ public class DrawApartment extends View {
                     invalidate();
                 }
                 return true;
-            case (MotionEvent.ACTION_UP) :
+            case (MotionEvent.ACTION_UP):
                 float touchStopX = motionEvent.getX();
                 float touchStopY = motionEvent.getY();
-                if(Math.abs(touchStopX - touchStartX) < clickEventMaxDelta && Math.abs(touchStopY - touchStartY) < clickEventMaxDelta)
-                {
+                if (Math.abs(touchStopX - touchStartX) < clickEventMaxDelta && Math.abs(touchStopY - touchStartY) < clickEventMaxDelta) {
                     onClick(touchStopX, touchStopY);
                     performClick();
                 }
@@ -285,70 +260,59 @@ public class DrawApartment extends View {
                 moveCenterY = 0;
 
                 return true;
-            case (MotionEvent.ACTION_CANCEL) :
+            case (MotionEvent.ACTION_CANCEL):
                 return true;
-            case (MotionEvent.ACTION_OUTSIDE) :
+            case (MotionEvent.ACTION_OUTSIDE):
                 return true;
-            default :
+            default:
                 return super.onTouchEvent(motionEvent);
         }
     }
 
-    private void onClick(float x, float y)
-    {
+    private void onClick(float x, float y) {
         boolean somethingClicked = false;
-        for(Room room : apartment.getRooms())
-        {
-            for(Appliance appliance : room.getAppliances())
-            {
+        for (Room room : apartment.getRooms()) {
+            for (Appliance appliance : room.getAppliances()) {
                 Rect boundingBox = getApplianceBoundingBox(room, appliance);
-                if(boundingBox.contains((int)x, (int)y))
-                {
+                if (boundingBox.contains((int) x, (int) y)) {
                     onClick(x, y, boundingBox, room, appliance);
                     somethingClicked = true;
                     break;
                 }
             }
-            if(somethingClicked)
-            {
+            if (somethingClicked) {
                 break;
             }
         }
     }
 
-    private void onClick(float x, float y, Rect boundingBox, Room room, Appliance appliance)
-    {
+    private void onClick(float x, float y, Rect boundingBox, Room room, Appliance appliance) {
         Log.i("SmartHouse DrawApartment", appliance.getName() + " clicked");
 
-        if(appliance instanceof LightSource)
-        {
+        if (appliance instanceof LightSource) {
             LightSource lightSource = (LightSource) appliance;
             boolean isOn = lightSource.isOn();
             lightSource.setIsOn(!isOn);
             invalidate();
             deviceTreeService.sendDeviceTree(apartment);
         }
-        if(appliance instanceof WashingMachine)
-        {
+        if (appliance instanceof WashingMachine) {
             WashingMachine washingMachine = (WashingMachine) appliance;
             // TODO Open Washing Machine activity
         }
     }
 
     @Override
-    public boolean performClick()
-    {
+    public boolean performClick() {
         return super.performClick();
     }
 
-    public void setActiveRoomIndex(int roomIndex)
-    {
-        if(activeRoomIndex == roomIndex)
-        {
+    public void setActiveRoomIndex(int roomIndex) {
+        if (activeRoomIndex == roomIndex) {
             return;
         }
         activeRoomIndex = roomIndex;
-        if(apartment != null) {
+        if (apartment != null) {
             Room room = apartment.getRooms()[roomIndex];
             ViewportData nextViewport = getViewportForRoom(room);
             viewportAnimationSequence.add(viewportData);
@@ -359,15 +323,14 @@ public class DrawApartment extends View {
         invalidate();
     }
 
-    private ViewportData getViewportForRoom(Room room)
-    {
+    private ViewportData getViewportForRoom(Room room) {
         float halfWidth = getWidth() / 2.0f;
         float halfHeight = getHeight() / 2.0f;
 
         float centerX = halfWidth - room.getRelativeX() * autoScale;
         float centerY = halfHeight + room.getRelativeY() * autoScale;
-        float xScale = (float)getWidth() / room.getWidth();
-        float yScale = (float)getHeight() / room.getHeight();
+        float xScale = (float) getWidth() / room.getWidth();
+        float yScale = (float) getHeight() / room.getHeight();
         float scale = Math.min(xScale, yScale) / autoScale;
 
         centerX -= halfWidth;
@@ -381,10 +344,8 @@ public class DrawApartment extends View {
         return new ViewportData(centerX, centerY, scale, true);
     }
 
-    private void setAutoScale()
-    {
-        if(apartment == null)
-        {
+    private void setAutoScale() {
+        if (apartment == null) {
             autoScale = scaleDefault;
             return;
         }
@@ -396,34 +357,29 @@ public class DrawApartment extends View {
         float apartmentMinY = 0;
         float apartmentMaxX = 0;
         float apartmentMaxY = 0;
-        for(Room room : apartment.getRooms())
-        {
+        for (Room room : apartment.getRooms()) {
             float x = room.getRelativeX();
             float y = room.getRelativeY();
             float w = room.getWidth() / 2;
             float h = room.getHeight() / 2;
 
             float minX = x - w;
-            if(minX < apartmentMinX)
-            {
+            if (minX < apartmentMinX) {
                 apartmentMinX = minX;
             }
 
             float minY = y - h;
-            if(minY < apartmentMinY)
-            {
+            if (minY < apartmentMinY) {
                 apartmentMinY = minY;
             }
 
             float maxX = x + w;
-            if(maxX > apartmentMaxX)
-            {
+            if (maxX > apartmentMaxX) {
                 apartmentMaxX = maxX;
             }
 
             float maxY = y + h;
-            if(maxY > apartmentMaxY)
-            {
+            if (maxY > apartmentMaxY) {
                 apartmentMaxY = maxY;
             }
         }
@@ -440,9 +396,8 @@ public class DrawApartment extends View {
         return autoScale * viewportData.scale;
     }
 
-    private int alightTextX(float originalPositionX, float textSize, int textLength)
-    {
-       return (int)(originalPositionX - textLength / 2 * textSize * 0.5);
+    private int alightTextX(float originalPositionX, float textSize, int textLength) {
+        return (int) (originalPositionX - textLength / 2 * textSize * 0.5);
     }
 
     private Point transformPoint(float x, float y) {
@@ -472,8 +427,7 @@ public class DrawApartment extends View {
 
         canvas.drawRect(roomBox.left, roomBox.top, roomBox.right, roomBox.bottom, roomBordersPaint);
 
-        if(room.getId() == activeRoomIndex)
-        {
+        if (room.getId() == activeRoomIndex) {
             Paint activeRoomPaint = new Paint();
             activeRoomPaint.setColor(Color.GREEN);
             activeRoomPaint.setAlpha(50);
@@ -489,21 +443,20 @@ public class DrawApartment extends View {
         String roomName = room.getName();
         //int xCentered = (int)(roomNamePosition.x - roomName.length() / 2 * fontSize * 0.5);
         int xCentered = alightTextX(roomNamePosition.x, fontSize, roomName.length());
-        int yOffsetted = (int)(roomNamePosition.y - 0.5 * scale);
+        int yOffsetted = (int) (roomNamePosition.y - 0.5 * scale);
         canvas.drawText(roomName, xCentered, yOffsetted, roomNamePaint);
     }
 
     private Bitmap resizedBitmap(Bitmap bitmap, float size) {
         float scale = getCompositeScale();
-        float ratio = (float)bitmap.getWidth() / bitmap.getHeight();
+        float ratio = (float) bitmap.getWidth() / bitmap.getHeight();
         float widthScaled = size * scale;
         float heightScaled = widthScaled / ratio;
         return Bitmap.createScaledBitmap(
-                bitmap, (int)widthScaled, (int)heightScaled, false);
+                bitmap, (int) widthScaled, (int) heightScaled, false);
     }
 
-    private Rect getRoomBoundingBox(Room room)
-    {
+    private Rect getRoomBoundingBox(Room room) {
         float relativeX = room.getRelativeX();
         float relativeY = room.getRelativeY();
 
@@ -515,8 +468,7 @@ public class DrawApartment extends View {
         return new Rect(leftTop.x, leftTop.y, rightTop.x, rightTop.y);
     }
 
-    private Rect getApplianceBoundingBox(Room room, Appliance appliance)
-    {
+    private Rect getApplianceBoundingBox(Room room, Appliance appliance) {
         float relativeX = appliance.getRelativeX() + room.getRelativeX();
         float relativeY = appliance.getRelativeY() + room.getRelativeY();
 
@@ -529,12 +481,10 @@ public class DrawApartment extends View {
         } else if (appliance instanceof Machine) {
             halfWidth = (machineSize / 2);
             halfHeight = (machineSize / 2);
-        } else if (appliance instanceof Sensor){
+        } else if (appliance instanceof Sensor) {
             halfWidth = (sensorSize / 2);
             halfHeight = (sensorSize / 2);
-        }
-        else
-        {
+        } else {
             halfWidth = (machineSize / 2);
             halfHeight = (machineSize / 2);
         }
