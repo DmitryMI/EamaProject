@@ -99,7 +99,7 @@ public class DrawApartment extends View {
             return;
         }
 
-        setAutoScale(canvas);
+        setAutoScale();
 
         for (Room room : apartment.getRooms()) {
             drawRoom(canvas, room);
@@ -156,6 +156,14 @@ public class DrawApartment extends View {
                     {
                         float scaleChange = distance / touchSize;
                         viewportScale *= scaleChange;
+
+                        viewportCenterX -= getWidth() / 2.0f;
+                        viewportCenterX *= scaleChange;
+                        viewportCenterX += getWidth() / 2.0f;
+
+                        viewportCenterY -= getHeight() / 2.0f;
+                        viewportCenterY *= scaleChange;
+                        viewportCenterY += getHeight() / 2.0f;
                     }
 
                     if(moveCenterX != 0 && moveCenterY != 0)
@@ -241,7 +249,7 @@ public class DrawApartment extends View {
         return super.performClick();
     }
 
-    private void setAutoScale(Canvas canvas)
+    private void setAutoScale()
     {
         if(apartment == null)
         {
@@ -294,12 +302,9 @@ public class DrawApartment extends View {
         float xScale = drawingRegionWidth / apartmentWidth;
         float yScale = drawingRegionHeight / apartmentHeight;
         autoScale = Math.min(xScale, yScale);
-
-        //viewportCenterX = getWidth() / 2.0f;
-        //viewportCenterY = getHeight() / 2.0f;
     }
 
-    private float getAutoScale() {
+    private float getCompositeScale() {
         return autoScale * viewportScale;
     }
 
@@ -310,15 +315,15 @@ public class DrawApartment extends View {
 
     private Point transformPoint(float x, float y) {
 
-        float scale = getAutoScale();
-        int transformedX = (int) ((x * scale + viewportCenterX));
-        int transformedY = (int) ((viewportCenterY - y * scale));
+        //float scale = getAutoScale();
+        int transformedX = (int) ((x * viewportScale * autoScale + viewportCenterX));
+        int transformedY = (int) ((viewportCenterY - y * viewportScale * autoScale));
 
         return new Point(transformedX, transformedY);
     }
 
     private void drawRoom(Canvas canvas, Room room) {
-        float scale = getAutoScale();
+        float scale = getCompositeScale();
 
         float x = (room.getRelativeX());
         float y = (room.getRelativeY());
@@ -348,7 +353,7 @@ public class DrawApartment extends View {
     }
 
     private Bitmap resizedBitmap(Bitmap bitmap, float size) {
-        float scale = getAutoScale();
+        float scale = getCompositeScale();
         float ratio = (float)bitmap.getWidth() / bitmap.getHeight();
         float widthScaled = size * scale;
         float heightScaled = widthScaled / ratio;
@@ -360,9 +365,6 @@ public class DrawApartment extends View {
     {
         float relativeX = appliance.getRelativeX() + room.getRelativeX();
         float relativeY = appliance.getRelativeY() + room.getRelativeY();
-
-        float x = (relativeX);
-        float y = (relativeY);
 
         float halfWidth;
         float halfHeight;
@@ -383,13 +385,13 @@ public class DrawApartment extends View {
             halfHeight = (machineSize / 2);
         }
 
-        Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
-        Point rightTop = transformPoint(x + halfWidth, y - halfHeight);
+        Point leftTop = transformPoint((relativeX) - halfWidth, (relativeY) + halfHeight);
+        Point rightTop = transformPoint((relativeX) + halfWidth, (relativeY) - halfHeight);
         return new Rect(leftTop.x, leftTop.y, rightTop.x, rightTop.y);
     }
 
     private void drawAppliance(Canvas canvas, Room room, Appliance appliance) {
-        float scale = getAutoScale();
+        float scale = getCompositeScale();
 
         Rect boundingBox = getApplianceBoundingBox(room, appliance);
 
