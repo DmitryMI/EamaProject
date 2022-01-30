@@ -39,6 +39,7 @@ public class DrawApartment extends View {
     private static final float textSize = 0.3f;
     private static final int margin = 100;
     private static final int clickEventMaxDelta = 200;
+    private static final float viewportAnimationSpeed = 0.05f;
 
     private Bitmap bitmapLightOn;
     private Bitmap bitmapLightOff;
@@ -52,6 +53,7 @@ public class DrawApartment extends View {
     private float autoScale;
 
     private final Handler animationHandler = new Handler();
+    private AnimationRunnable animationRunnable;
     private boolean isAnimationRunning = false;
     private ArrayList<ViewportData> viewportAnimationSequence = new ArrayList<>();
 
@@ -103,7 +105,7 @@ public class DrawApartment extends View {
             ViewportData nextViewport = viewportAnimationSequence.get(animationSequenceIndex);
             viewportData = ViewportData.lerp(previousViewport, nextViewport, lerpAlpha);
             invalidate();
-            lerpAlpha += 0.1f;
+            lerpAlpha += viewportAnimationSpeed;
             if(lerpAlpha >= 1.0f)
             {
                 viewportData = ViewportData.lerp(previousViewport, nextViewport, 1.0f);
@@ -128,10 +130,22 @@ public class DrawApartment extends View {
     {
         if(isAnimationRunning)
         {
-            return;
+            animationHandler.removeCallbacks(animationRunnable);
         }
         isAnimationRunning = true;
-        animationHandler.post(new AnimationRunnable());
+        animationRunnable = new AnimationRunnable();
+        animationHandler.post(animationRunnable);
+    }
+
+    private void stopViewportAnimation()
+    {
+        if(!isAnimationRunning)
+        {
+            return;
+        }
+        animationHandler.removeCallbacks(animationRunnable);
+        isAnimationRunning = false;
+        animationRunnable = null;
     }
 
     public DrawApartment(Context context)
@@ -247,6 +261,7 @@ public class DrawApartment extends View {
                     {
                         viewportData.centerX += shiftX;
                         viewportData.centerY += shiftY;
+                        stopViewportAnimation();
                     }
 
                     moveCenterX = centerX;
@@ -328,11 +343,16 @@ public class DrawApartment extends View {
 
     public void setActiveRoomIndex(int roomIndex)
     {
+        if(activeRoomIndex == roomIndex)
+        {
+            return;
+        }
         activeRoomIndex = roomIndex;
         if(apartment != null) {
             Room room = apartment.getRooms()[roomIndex];
             ViewportData nextViewport = getViewportForRoom(room);
             viewportAnimationSequence.add(viewportData);
+            viewportAnimationSequence.add(new ViewportData(getWidth() / 2.0f, getHeight() / 2.0f, 1, true));
             viewportAnimationSequence.add(nextViewport);
             animateViewport();
         }
