@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.example.smarthouse.backend.deviceTree.types.TemperatureSensor;
 import com.example.smarthouse.backend.deviceTree.types.WashingMachine;
 import com.example.smarthouse.backend.location.LocationService;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class DrawApartment extends View {
@@ -49,6 +51,10 @@ public class DrawApartment extends View {
     private int activeRoomIndex = -1;
     private float autoScale;
 
+    private final Handler animationHandler = new Handler();
+    private boolean isAnimationRunning = false;
+    private ArrayList<ViewportData> viewportAnimationSequence = new ArrayList<>();
+
     private ViewportData viewportData = new ViewportData(0, 0, 1, false);
 
     private float touchStartX;
@@ -71,12 +77,68 @@ public class DrawApartment extends View {
             this.scale = scale;
             this.isInitialized = isInitialized;
         }
+
+        private static float lerp(float from, float to, float alpha)
+        {
+            return (to - from) * alpha + from;
+        }
+
+        public static ViewportData lerp(ViewportData from, ViewportData to, float alpha)
+        {
+            float centerX = lerp(from.centerX, to.centerX, alpha);
+            float centerY = lerp(from.centerY, to.centerY, alpha);
+            float scale = lerp(from.scale, to.scale, alpha);
+            return new ViewportData(centerX, centerY, scale, true);
+        }
+    }
+
+    private class AnimationRunnable implements Runnable
+    {
+        int animationSequenceIndex = 1;
+        float lerpAlpha = 0;
+
+        @Override
+        public void run() {
+            ViewportData previousViewport = viewportAnimationSequence.get(animationSequenceIndex - 1);
+            ViewportData nextViewport = viewportAnimationSequence.get(animationSequenceIndex);
+            viewportData = ViewportData.lerp(previousViewport, nextViewport, lerpAlpha);
+            invalidate();
+            lerpAlpha += 0.1f;
+            if(lerpAlpha >= 1.0f)
+            {
+                viewportData = ViewportData.lerp(previousViewport, nextViewport, 1.0f);
+                animationSequenceIndex++;
+                lerpAlpha = 0;
+            }
+
+            if(animationSequenceIndex == viewportAnimationSequence.size())
+            {
+                animationSequenceIndex = 1;
+                viewportAnimationSequence.clear();
+                isAnimationRunning = false;
+            }
+            else
+            {
+                animationHandler.postDelayed(this, 10);
+            }
+        }
+    }
+
+    private void animateViewport()
+    {
+        if(isAnimationRunning)
+        {
+            return;
+        }
+        isAnimationRunning = true;
+        animationHandler.post(new AnimationRunnable());
     }
 
     public DrawApartment(Context context)
     {
         super(context);
     }
+
     public DrawApartment(Context context, android.util.AttributeSet attributeSet)
     {
         super(context, attributeSet);
@@ -269,26 +331,32 @@ public class DrawApartment extends View {
         activeRoomIndex = roomIndex;
         if(apartment != null) {
             Room room = apartment.getRooms()[roomIndex];
-            viewportData = getViewportForRoom(room);
+            ViewportData nextViewport = getViewportForRoom(room);
+            viewportAnimationSequence.add(viewportData);
+            viewportAnimationSequence.add(nextViewport);
+            animateViewport();
         }
         invalidate();
     }
 
     private ViewportData getViewportForRoom(Room room)
     {
-        float centerX = getWidth() / 2.0f - room.getRelativeX() * autoScale;
-        float centerY = getHeight() / 2.0f + room.getRelativeY() * autoScale;
+        float halfWidth = getWidth() / 2.0f;
+        float halfHeight = getHeight() / 2.0f;
+
+        float centerX = halfWidth - room.getRelativeX() * autoScale;
+        float centerY = halfHeight + room.getRelativeY() * autoScale;
         float xScale = (float)getWidth() / room.getWidth();
         float yScale = (float)getHeight() / room.getHeight();
         float scale = Math.min(xScale, yScale) / autoScale;
 
-        centerX -= getWidth() / 2.0f;
+        centerX -= halfWidth;
         centerX *= scale;
-        centerX += getWidth() / 2.0f;
+        centerX += halfWidth;
 
-        centerY -= getHeight() / 2.0f;
+        centerY -= halfHeight;
         centerY *= scale;
-        centerY += getHeight() / 2.0f;
+        centerY += halfHeight;
 
         return new ViewportData(centerX, centerY, scale, true);
     }
