@@ -49,16 +49,29 @@ public class DrawApartment extends View {
     private int activeRoomIndex = -1;
     private float autoScale;
 
-    private boolean viewportInitialized = false;
-    private float viewportCenterX;
-    private float viewportCenterY;
-    private float viewportScale = 1.0f;
+    private ViewportData viewportData = new ViewportData(0, 0, 1, false);
 
     private float touchStartX;
     private float touchStartY;
     private float touchSize;
     private float moveCenterX;
     private float moveCenterY;
+
+    private static class ViewportData
+    {
+        public float centerX;
+        public float centerY;
+        public float scale;
+        public boolean isInitialized = false;
+
+        public ViewportData(float x, float y, float scale, boolean isInitialized)
+        {
+            centerX = x;
+            centerY = y;
+            this.scale = scale;
+            this.isInitialized = isInitialized;
+        }
+    }
 
     public DrawApartment(Context context)
     {
@@ -90,11 +103,11 @@ public class DrawApartment extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if(!viewportInitialized)
+        if(!viewportData.isInitialized)
         {
-            viewportCenterX = getWidth() / 2.0f;
-            viewportCenterY = getHeight() / 2.0f;
-            viewportInitialized = true;
+            viewportData.centerX = getWidth() / 2.0f;
+            viewportData.centerY = getHeight() / 2.0f;
+            viewportData.isInitialized = true;
         }
 
         if (apartment == null) {
@@ -133,7 +146,7 @@ public class DrawApartment extends View {
                 }
                 return true;
             case (MotionEvent.ACTION_MOVE) :
-                if(!viewportInitialized)
+                if(!viewportData.isInitialized)
                 {
                     return true;
                 }
@@ -157,21 +170,21 @@ public class DrawApartment extends View {
                     else
                     {
                         float scaleChange = distance / touchSize;
-                        viewportScale *= scaleChange;
+                        viewportData.scale *= scaleChange;
 
-                        viewportCenterX -= getWidth() / 2.0f;
-                        viewportCenterX *= scaleChange;
-                        viewportCenterX += getWidth() / 2.0f;
+                        viewportData.centerX -= getWidth() / 2.0f;
+                        viewportData.centerX *= scaleChange;
+                        viewportData.centerX += getWidth() / 2.0f;
 
-                        viewportCenterY -= getHeight() / 2.0f;
-                        viewportCenterY *= scaleChange;
-                        viewportCenterY += getHeight() / 2.0f;
+                        viewportData.centerY -= getHeight() / 2.0f;
+                        viewportData.centerY *= scaleChange;
+                        viewportData.centerY += getHeight() / 2.0f;
                     }
 
                     if(moveCenterX != 0 && moveCenterY != 0)
                     {
-                        viewportCenterX += shiftX;
-                        viewportCenterY += shiftY;
+                        viewportData.centerX += shiftX;
+                        viewportData.centerY += shiftY;
                     }
 
                     moveCenterX = centerX;
@@ -254,7 +267,21 @@ public class DrawApartment extends View {
     public void setActiveRoomIndex(int roomIndex)
     {
         activeRoomIndex = roomIndex;
+        if(apartment != null) {
+            Rect boundingBox = getRoomBoundingBox(apartment.getRooms()[roomIndex]);
+            viewportData = getViewportForBox(boundingBox);
+        }
         invalidate();
+    }
+
+    private ViewportData getViewportForBox(Rect boundingBox)
+    {
+        float centerX = boundingBox.centerX();
+        float centerY = boundingBox.centerY();
+        float xScale = (float)getWidth() / boundingBox.width();
+        float yScale = (float)getHeight() / boundingBox.height();
+        float scale = Math.min(xScale, yScale);
+        return new ViewportData(centerX, centerY, 1, true);
     }
 
     private void setAutoScale()
@@ -313,7 +340,7 @@ public class DrawApartment extends View {
     }
 
     private float getCompositeScale() {
-        return autoScale * viewportScale;
+        return autoScale * viewportData.scale;
     }
 
     private int alightTextX(float originalPositionX, float textSize, int textLength)
@@ -323,9 +350,9 @@ public class DrawApartment extends View {
 
     private Point transformPoint(float x, float y) {
 
-        //float scale = getAutoScale();
-        int transformedX = (int) ((x * viewportScale * autoScale + viewportCenterX));
-        int transformedY = (int) ((viewportCenterY - y * viewportScale * autoScale));
+        float scale = viewportData.scale * autoScale;
+        int transformedX = (int) ((x * scale + viewportData.centerX));
+        int transformedY = (int) ((viewportData.centerY - y * scale));
 
         return new Point(transformedX, transformedY);
     }
@@ -338,21 +365,22 @@ public class DrawApartment extends View {
         float halfWidth = (room.getWidth() / 2);
         float halfHeight = (room.getHeight() / 2);
 
-        Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
-        Point rightBottom = transformPoint(x + halfWidth, y - halfHeight);
+        //Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
+        //Point rightBottom = transformPoint(x + halfWidth, y - halfHeight);
+        Rect roomBox = getRoomBoundingBox(room);
 
         Paint roomBordersPaint = new Paint();
         roomBordersPaint.setStyle(Paint.Style.STROKE);
         roomBordersPaint.setStrokeWidth(0.05f * scale);
 
-        canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, roomBordersPaint);
+        canvas.drawRect(roomBox.left, roomBox.top, roomBox.right, roomBox.bottom, roomBordersPaint);
 
         if(room.getId() == activeRoomIndex)
         {
             Paint activeRoomPaint = new Paint();
             activeRoomPaint.setColor(Color.GREEN);
             activeRoomPaint.setAlpha(50);
-            canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, activeRoomPaint);
+            canvas.drawRect(roomBox.left, roomBox.top, roomBox.right, roomBox.bottom, activeRoomPaint);
         }
 
         Paint roomNamePaint = new Paint();
@@ -375,6 +403,19 @@ public class DrawApartment extends View {
         float heightScaled = widthScaled / ratio;
         return Bitmap.createScaledBitmap(
                 bitmap, (int)widthScaled, (int)heightScaled, false);
+    }
+
+    private Rect getRoomBoundingBox(Room room)
+    {
+        float relativeX = room.getRelativeX();
+        float relativeY = room.getRelativeY();
+
+        float halfWidth = room.getWidth() / 2.0f;
+        float halfHeight = room.getHeight() / 2.0f;
+
+        Point leftTop = transformPoint((relativeX) - halfWidth, (relativeY) + halfHeight);
+        Point rightTop = transformPoint((relativeX) + halfWidth, (relativeY) - halfHeight);
+        return new Rect(leftTop.x, leftTop.y, rightTop.x, rightTop.y);
     }
 
     private Rect getApplianceBoundingBox(Room room, Appliance appliance)
