@@ -309,14 +309,10 @@ public class DrawApartment extends View {
     }
 
     private Point transformPoint(float x, float y) {
-        int canvasWidth = getWidth();
-        int canvasHeight = getHeight();
 
-        int canvasHalfWidth = canvasWidth / 2;
-        int canvasHalfHeight = canvasHeight / 2;
-
-        int transformedX = (int) (x + viewportCenterX);
-        int transformedY = (int) (viewportCenterY - y);
+        float scale = getAutoScale();
+        int transformedX = (int) ((x * scale + viewportCenterX));
+        int transformedY = (int) ((viewportCenterY - y * scale));
 
         return new Point(transformedX, transformedY);
     }
@@ -324,10 +320,10 @@ public class DrawApartment extends View {
     private void drawRoom(Canvas canvas, Room room) {
         float scale = getAutoScale();
 
-        float x = (room.getRelativeX() * scale);
-        float y = (room.getRelativeY() * scale);
-        float halfWidth = (room.getWidth() * scale / 2);
-        float halfHeight = (room.getHeight() * scale / 2);
+        float x = (room.getRelativeX());
+        float y = (room.getRelativeY());
+        float halfWidth = (room.getWidth() / 2);
+        float halfHeight = (room.getHeight() / 2);
 
         Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
         Point rightBottom = transformPoint(x + halfWidth, y - halfHeight);
@@ -362,31 +358,29 @@ public class DrawApartment extends View {
 
     private Rect getApplianceBoundingBox(Room room, Appliance appliance)
     {
-        float scale = getAutoScale();
-
         float relativeX = appliance.getRelativeX() + room.getRelativeX();
         float relativeY = appliance.getRelativeY() + room.getRelativeY();
 
-        float x = (relativeX * scale);
-        float y = (relativeY * scale);
+        float x = (relativeX);
+        float y = (relativeY);
 
         float halfWidth;
         float halfHeight;
 
         if (appliance instanceof LightSource) {
-            halfWidth = (lightSourceSize * scale / 2);
-            halfHeight = (lightSourceSize * scale / 2);
+            halfWidth = (lightSourceSize / 2);
+            halfHeight = (lightSourceSize / 2);
         } else if (appliance instanceof Machine) {
-            halfWidth = (machineSize * scale / 2);
-            halfHeight = (machineSize * scale / 2);
+            halfWidth = (machineSize / 2);
+            halfHeight = (machineSize / 2);
         } else if (appliance instanceof Sensor){
-            halfWidth = (sensorSize * scale / 2);
-            halfHeight = (sensorSize * scale / 2);
+            halfWidth = (sensorSize / 2);
+            halfHeight = (sensorSize / 2);
         }
         else
         {
-            halfWidth = (machineSize * scale / 2);
-            halfHeight = (machineSize * scale / 2);
+            halfWidth = (machineSize / 2);
+            halfHeight = (machineSize / 2);
         }
 
         Point leftTop = transformPoint(x - halfWidth, y + halfHeight);
