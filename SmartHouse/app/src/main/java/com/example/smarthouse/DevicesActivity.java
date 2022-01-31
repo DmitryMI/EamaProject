@@ -25,7 +25,6 @@ public class DevicesActivity extends AppCompatActivity {
     List<String> machineArray = new ArrayList<>();
 
 
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
@@ -49,7 +48,10 @@ public class DevicesActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         overridePendingTransition(0, 0);
                         return true;
-
+                    case R.id.navigation_notifications:
+                        startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
                     case R.id.navigation_devices:
                         return true;
                 }
