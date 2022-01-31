@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthouse.backend.deviceTree.DeviceTreeBroadcastReceiver;
 import com.example.smarthouse.backend.deviceTree.DeviceTreeService;
@@ -32,6 +34,9 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
     private Apartment apartment;
     private DeviceTreeService deviceTreeService;
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
+	
+	 RecyclerView recyclerView;
+    List<String> machineArray = new ArrayList<>();
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -67,6 +72,8 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
             }
         }, MainActivity.DeviceTreeRefreshRateMs);
     }
+   
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +84,13 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         registerReceiver(deviceTreeBroadcastReceiver, deviceTreeFilter);
         Intent deviceTreeServiceBind = new Intent(this, DeviceTreeService.class);
         bindService(deviceTreeServiceBind, serviceConnection, Context.BIND_AUTO_CREATE);
+		
+        recyclerView = findViewById(R.id.recyclerView);
+
+        machineArray.add("Washing machine");
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, machineArray);
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -90,7 +104,10 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         overridePendingTransition(0, 0);
                         return true;
-
+                    case R.id.navigation_notifications:
+                        startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
                     case R.id.navigation_devices:
                         return true;
                 }
@@ -98,9 +115,12 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
             }
         });
 
+
+    }
+
+
+    public void startWashingbutton(View view) {
         ImageButton startWashingButton = findViewById(R.id.startWashingbutton);
-
-
         startWashingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,7 +146,6 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
                 popup.show();
             }
         });
-
     }
 
     private WashingMachine getWashingMachine()
@@ -165,5 +184,8 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         apartment = deviceTreeService.getDeviceTree();
 
         // TODO Update Washing Maching Labels
+
     }
+
+
 }

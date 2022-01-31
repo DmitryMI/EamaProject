@@ -32,4 +32,8 @@ public class WashingMachine extends Machine {
     {
 
     }
+
+    public String getName(){
+        return "Washing machine";
+    }
 }
