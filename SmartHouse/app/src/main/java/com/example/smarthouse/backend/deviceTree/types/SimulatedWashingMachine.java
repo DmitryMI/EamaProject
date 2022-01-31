@@ -44,8 +44,8 @@ public class SimulatedWashingMachine extends WashingMachine{
     public void simulationUpdate(float deltaTime)
     {
         if (!isOn) {
-            String mode = getRandom(Arrays.asList("Default", "Short", "Hot"));
-            setNextWashingProgram(mode);
+            //String mode = getRandom(Arrays.asList("Default", "Short", "Hot"));
+            //setNextWashingProgram(mode);
         }
         else
         {

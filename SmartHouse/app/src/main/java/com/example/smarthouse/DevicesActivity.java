@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver {
 
@@ -191,11 +192,11 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         TextView timeLeftSecondsLabel = findViewById(R.id.timeleft);
         TextView temperatureLabel = findViewById(R.id.temperature);
 
-        if (isOn == true) {
+        if (isOn) {
 
             isOnLabel.setText("is On");
-            timeLeftSecondsLabel.setText("Time left:" + timeLeftSeconds / 60);
-            temperatureLabel.setText("Temperature:" + temperature);
+            timeLeftSecondsLabel.setText(String.format(Locale.getDefault(), "Time left: %3.2f m", timeLeftSeconds / 60));
+            temperatureLabel.setText("Temperature: " + temperature);
         } else {
             isOnLabel.setText("is Off");
             timeLeftSecondsLabel.setText(" ");

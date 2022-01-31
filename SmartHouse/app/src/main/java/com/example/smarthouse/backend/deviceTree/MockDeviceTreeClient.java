@@ -86,7 +86,7 @@ public class MockDeviceTreeClient extends DeviceTreeClient{
         public void run() {
             while (!stopSimulation)
             {
-                simulationLoop(10000);
+                simulationLoop(10);
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
