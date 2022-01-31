@@ -34,7 +34,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull DevicesViewHolder holder, int position) {
-        holder.textView.setText(machineArrayAdapter.get(position));
+        holder.devicename.setText(machineArrayAdapter.get(position));
+
 
     }
 
@@ -46,12 +47,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class DevicesViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
+        TextView devicename;
 
 
         public DevicesViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.textView1);
+            devicename = itemView.findViewById(R.id.devicename);
+
 
         }
     }

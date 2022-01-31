@@ -12,10 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +39,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
     private Apartment apartment;
     private DeviceTreeService deviceTreeService;
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
-	
+
     RecyclerView recyclerView;
     List<String> machineArray = new ArrayList<>();
 
@@ -47,8 +49,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            if (service instanceof DeviceTreeService.LocalBinder)
-            {
+            if (service instanceof DeviceTreeService.LocalBinder) {
                 DeviceTreeService.LocalBinder binder = (DeviceTreeService.LocalBinder) service;
                 deviceTreeService = binder.getService();
                 deviceTreeService.requestDeviceTreeUpdate();
@@ -64,9 +65,8 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         }
     };
 
-    private void startForegroundSynchronizationLoop()
-    {
-        Handler handler=new Handler();
+    private void startForegroundSynchronizationLoop() {
+        Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -75,7 +75,6 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
             }
         }, MainActivity.DeviceTreeRefreshRateMs);
     }
-   
 
 
     @Override
@@ -88,7 +87,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         registerReceiver(deviceTreeBroadcastReceiver, deviceTreeFilter);
         Intent deviceTreeServiceBind = new Intent(this, DeviceTreeService.class);
         bindService(deviceTreeServiceBind, serviceConnection, Context.BIND_AUTO_CREATE);
-		
+
         recyclerView = findViewById(R.id.recyclerView);
 
         machineArray.add("Washing machine");
@@ -136,8 +135,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
                         CharSequence mode = item.getTitle();
                         String modeStr = mode.toString();
                         WashingMachine washingMachine = getWashingMachine();
-                        if(washingMachine == null)
-                        {
+                        if (washingMachine == null) {
                             return true;
                         }
                         washingMachine.setNextWashingProgram(modeStr);
@@ -152,19 +150,14 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         });
     }
 
-    private WashingMachine getWashingMachine()
-    {
-        if(apartment == null)
-        {
+    private WashingMachine getWashingMachine() {
+        if (apartment == null) {
             return null;
         }
 
-        for(Room room : apartment.getRooms())
-        {
-            for(Appliance appliance : room.getAppliances())
-            {
-                if(appliance instanceof WashingMachine)
-                {
+        for (Room room : apartment.getRooms()) {
+            for (Appliance appliance : room.getAppliances()) {
+                if (appliance instanceof WashingMachine) {
                     return (WashingMachine) appliance;
                 }
             }
@@ -175,8 +168,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
 
     public void stopWashingButton(View view) {
         WashingMachine washingMachine = getWashingMachine();
-        if(washingMachine == null)
-        {
+        if (washingMachine == null) {
             return;
         }
         washingMachine.setIsOn(false);
@@ -188,17 +180,28 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
         apartment = deviceTreeService.getDeviceTree();
 
         WashingMachine washingMachine = getWashingMachine();
-        if(washingMachine == null)
-        {
+        if (washingMachine == null) {
             return;
         }
         boolean isOn = washingMachine.getIsOn();
         float timeLeftSeconds = washingMachine.getWorkTimeLeft();
         float temperature = washingMachine.getWashingTemperature();
-        // TODO Update Washing Machine Labels
-        // e.g. isOnLabel.setText(isOn);
-        // e.g. temperatureLabel.setText(temperature);
-        // etc
+
+        TextView isOnLabel = findViewById(R.id.ison);
+        TextView timeLeftSecondsLabel = findViewById(R.id.timeleft);
+        TextView temperatureLabel = findViewById(R.id.temperature);
+
+        if (isOn == true) {
+
+            isOnLabel.setText("is On");
+            timeLeftSecondsLabel.setText("Time left:" + timeLeftSeconds / 60);
+            temperatureLabel.setText("Temperature:" + temperature);
+        } else {
+            isOnLabel.setText("is Off");
+            timeLeftSecondsLabel.setText(" ");
+            temperatureLabel.setText(" ");
+        }
+
     }
 
 
