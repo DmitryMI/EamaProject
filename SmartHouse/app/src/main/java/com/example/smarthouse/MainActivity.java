@@ -37,8 +37,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver, LocationUpdatedBroadcastReceiver.LocationUpdateReceiver {
     public static final int FineLocationPermissionRequestCode = 100;
-    private static final int DeviceTreeRefreshRateMs = 5000;
-    private static final int LocationRefreshRateMs = 10000;
+    public static final int DeviceTreeRefreshRateMs = 5000;
+    public static final int LocationRefreshRateMs = 10000;
 
     private DeviceTreeService deviceTreeService;
     private LocationService locationService;
