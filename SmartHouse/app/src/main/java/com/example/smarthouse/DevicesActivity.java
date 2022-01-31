@@ -29,13 +29,16 @@ import com.example.smarthouse.backend.location.LocationService;
 import com.example.smarthouse.ui.DrawApartment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroadcastReceiver.DeviceTreeReceiver {
 
     private Apartment apartment;
     private DeviceTreeService deviceTreeService;
     private DeviceTreeBroadcastReceiver deviceTreeBroadcastReceiver;
 	
-	 RecyclerView recyclerView;
+    RecyclerView recyclerView;
     List<String> machineArray = new ArrayList<>();
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -75,6 +78,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
    
 
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
@@ -183,8 +187,18 @@ public class DevicesActivity extends AppCompatActivity implements DeviceTreeBroa
     public void onDeviceTreeReceived() {
         apartment = deviceTreeService.getDeviceTree();
 
-        // TODO Update Washing Maching Labels
-
+        WashingMachine washingMachine = getWashingMachine();
+        if(washingMachine == null)
+        {
+            return;
+        }
+        boolean isOn = washingMachine.getIsOn();
+        float timeLeftSeconds = washingMachine.getWorkTimeLeft();
+        float temperature = washingMachine.getWashingTemperature();
+        // TODO Update Washing Machine Labels
+        // e.g. isOnLabel.setText(isOn);
+        // e.g. temperatureLabel.setText(temperature);
+        // etc
     }
 
 
